@@ -6,13 +6,17 @@ RUN apt-get update && apt-get install -y \
     libzip-dev zip unzip git \
     libpng-dev libjpeg-dev libfreetype6-dev libldap2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql zip gd ldap
+    && docker-php-ext-install pdo_mysql zip gd ldap \
+    && rm -rf /var/lib/apt/lists/*
 
 # ติดตั้ง Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # ตั้งค่า working directory
 WORKDIR /var/www/html
+
+# Copy PHP-FPM config
+COPY php-fpm.conf /usr/local/etc/php-fpm.d/zz-custom.conf
 
 # copy project
 COPY . .
@@ -22,3 +26,6 @@ RUN composer install --no-dev --optimize-autoloader
 
 # ให้สิทธิ์ storage และ bootstrap/cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+EXPOSE 9000
+CMD ["php-fpm"]

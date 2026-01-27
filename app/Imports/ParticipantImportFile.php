@@ -5,8 +5,10 @@ namespace App\Imports;
 use App\Models\ParticipantImport;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithStartRow;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
 
-class ParticipantImportFile implements ToModel, WithStartRow
+class ParticipantImportFile implements ToModel, WithStartRow, WithChunkReading, WithBatchInserts
 
 {
     /**
@@ -43,5 +45,13 @@ class ParticipantImportFile implements ToModel, WithStartRow
     public function startRow(): int
     {
         return 2; // Skip the first row
+    }
+    public function chunkSize(): int
+    {
+        return 1000; // ปลอดภัยกับ WAMP
+    }
+    public function batchSize(): int
+    {
+        return 1000;
     }
 }

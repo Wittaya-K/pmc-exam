@@ -12,6 +12,7 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent nav-flat" data-widget="treeview" role="menu" data-accordion="false">
                 {{-- <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false"> --}}
+                @can('home_access')
                 <li class="nav-item">
                     <a href="{{ route('admin.home') }}" class="nav-link">
                         <p>
@@ -20,6 +21,7 @@
                         </p>
                     </a>
                 </li>
+                @endcan
                 @can('user_management_access')
                 <li class="nav-item has-treeview {{ request()->is('admin/test_center*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
@@ -41,8 +43,7 @@
                     </ul>
                 </li>
                 @endcan
-
-                {{-- <li class="nav-header">ข้อมูล</li> --}}
+                @can('file_import_access')
                 <li class="nav-item has-treeview {{ request()->is('admin/file_import*') ? 'menu-open' : '' }} {{ request()->is('admin/student_update*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
                         <i class="fad fa-folder"></i>
@@ -52,7 +53,6 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        @can('file_import_access')
                         <li class="nav-item">
                             <a href="{{ route('admin.file_import.index') }}" class="nav-link {{ request()->is('admin/file_import') || request()->is('admin/file_import/*') ? 'active' : '' }}">
                                 <i class="fad fa-chevron-circle-right"></i>
@@ -69,9 +69,10 @@
                                 </p>
                             </a>
                         </li>
-                        @endcan
                     </ul>
                 </li>
+                @endcan
+                @can('arrange_seat_access')
                 <li class="nav-item has-treeview {{ request()->is('admin/arrange_seat*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
                         <i class="fad fa-folder"></i>
@@ -81,7 +82,6 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        @can('arrange_seat_access')
                         <li class="nav-item">
                             <a href="{{ route('admin.arrange_seat.index') }}" class="nav-link {{ request()->is('admin/arrange_seat') || request()->is('admin/arrange_seat/*') ? 'active' : '' }}">
                                 <i class="fad fa-chevron-circle-right"></i>
@@ -90,9 +90,10 @@
                                 </p>
                             </a>
                         </li>
-                        @endcan
                     </ul>
                 </li>
+                @endcan
+                @can('student_recheck_access')
                 <li class="nav-item has-treeview {{ request()->is('admin/student_recheck*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
                         <i class="fad fa-folder"></i>
@@ -103,17 +104,17 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            @can('student_recheck_access')
                             <a href="{{ route('admin.student_recheck.index') }}" class="nav-link {{ request()->is('admin/student_recheck') || request()->is('admin/student_recheck/*') ? 'active' : '' }}">
                                 <i class="fad fa-chevron-circle-right"></i>
                                 <p>
                                     <span>ผู้เข้าสอบ</span>
                                 </p>
                             </a>
-                            @endcan
                         </li>
                     </ul>
                 </li>
+                @endcan
+                @can('report_access')
                 <li class="nav-item has-treeview {{ request()->is('admin/reports*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
                         <i class="fad fa-folder"></i>
@@ -124,20 +125,17 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            @can('report_access')
                             <a href="{{ route('admin.reports.index') }}" class="nav-link {{ request()->is('admin/reports') || request()->is('admin/reports/*') ? 'active' : '' }}">
                                 <i class="fad fa-chevron-circle-right"></i>
                                 <p>
                                     <span>ใบเซ็นชื่อ</span>
                                 </p>
                             </a>
-                            @endcan
                         </li>
                     </ul>
                 </li>
-
+                @endcan
                 @can('user_management_access')
-                {{-- <li class="nav-header">จัดการผู้ใช้งาน</li> --}}
                 <li class="nav-item has-treeview {{ request()->is('admin/permissions*') ? 'menu-open' : '' }} {{ request()->is('admin/roles*') ? 'menu-open' : '' }} {{ request()->is('admin/users*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
                         <i class="fad fa-users"></i>
