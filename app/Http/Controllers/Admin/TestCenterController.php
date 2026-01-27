@@ -54,8 +54,7 @@ class TestCenterController extends Controller
 		return view('admin.test_center.create');
 	}
 
-	public function save(Request $request)
-    {
+	public function save(Request $request){
         $validator = Validator::make($request->all(), [
             'fileUpload' => 'required|array',
             'fileUpload.*' => 'file|max:102400',
