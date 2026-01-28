@@ -9,7 +9,6 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 
 class CenterImportFile implements ToModel, WithStartRow, WithChunkReading, WithBatchInserts
-
 {
     /**
      * @param array $row

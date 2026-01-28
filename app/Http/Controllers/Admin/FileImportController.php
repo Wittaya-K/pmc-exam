@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Jobs\StudentImportJob;
 
 class FileImportController extends Controller
 {
@@ -33,9 +34,55 @@ class FileImportController extends Controller
 		return response()->json(['status' => true, 'data' => $ParticipantImport ]);
 	}
 
-	public function save(Request $request,$id = "")
-	{
-		$validator = Validator::make($request->all(), [
+	// public function save(Request $request,$id = "")
+	// {
+	// 	$validator = Validator::make($request->all(), [
+    //         'fileUpload' => 'required|array',
+    //         'fileUpload.*' => 'file|max:102400',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'error' => $validator->errors()
+    //         ]);
+    //     }
+
+    //     $files = $request->file('fileUpload');
+
+    //     // sort ตามตัวเลขหน้าชื่อไฟล์
+    //     // usort($files, function ($a, $b) {
+    //     //     preg_match('/^\d+/', $a->getClientOriginalName(), $ma);
+    //     //     preg_match('/^\d+/', $b->getClientOriginalName(), $mb);
+
+    //     //     return intval($ma[0] ?? 0) <=> intval($mb[0] ?? 0);
+    //     // });
+
+    //     foreach ($files as $file) {
+            
+    //         // เก็บไฟล์ชั่วคราว
+    //         Excel::import(new ParticipantImportFile, $file);
+    //         $fileName = $file->getClientOriginalName();
+    //         $path = public_path('uploads' . $fileName);
+    //         $file->move(public_path('uploads'), $fileName);
+    //         $path = public_path('uploads/' . $fileName);
+
+    //         // ลบไฟล์หลัง import เสร็จ
+    //         if (file_exists($path)) {
+    //             unlink($path);
+    //         }
+    //     }
+		
+	// 	return response()->json([
+    //         'success' => true,
+    //         'message' => 'success'
+    //     ]);
+		
+	// 	// return back();
+	// }
+
+	public function save(Request $request){
+        $validator = Validator::make($request->all(), [
             'fileUpload' => 'required|array',
             'fileUpload.*' => 'file|max:102400',
         ]);
@@ -48,37 +95,26 @@ class FileImportController extends Controller
         }
 
         $files = $request->file('fileUpload');
-
-        // sort ตามตัวเลขหน้าชื่อไฟล์
-        // usort($files, function ($a, $b) {
-        //     preg_match('/^\d+/', $a->getClientOriginalName(), $ma);
-        //     preg_match('/^\d+/', $b->getClientOriginalName(), $mb);
-
-        //     return intval($ma[0] ?? 0) <=> intval($mb[0] ?? 0);
-        // });
-
+        $filePaths = [];
+        
+        // เก็บไฟล์ชั่วคราวก่อน
         foreach ($files as $file) {
-            
-            // เก็บไฟล์ชั่วคราว
-            Excel::import(new ParticipantImportFile, $file);
-            $fileName = $file->getClientOriginalName();
-            $path = public_path('uploads' . $fileName);
-            $file->move(public_path('uploads'), $fileName);
-            $path = public_path('uploads/' . $fileName);
-
-            // ลบไฟล์หลัง import เสร็จ
-            if (file_exists($path)) {
-                unlink($path);
-            }
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/temp'), $fileName);
+            $filePaths[] = [
+                'path' => public_path('uploads/temp/' . $fileName),
+                'original_name' => $file->getClientOriginalName()
+            ];
         }
-		
-		return response()->json([
+        
+        // ส่ง path ไปให้ Job แทน
+        StudentImportJob::dispatch($filePaths);
+        
+        return response()->json([
             'success' => true,
-            'message' => 'success'
+            'message' => 'Files are being processed'
         ]);
-		
-		// return back();
-	}
+    }
 
     public function update(Request $request, $id = ""){
 
