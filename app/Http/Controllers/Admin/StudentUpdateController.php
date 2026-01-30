@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SeatAssign;
 use App\Models\ParticipantImport;
 use App\Exports\StudentRecheckExportFile;
-use App\Exports\ParticipantExportFile;
+use App\Exports\StudentUpdateExportFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
@@ -192,7 +192,7 @@ class StudentUpdateController extends Controller
     }
     public function exportFile()
 	{
-		$filename = "เช็คชื่อผู้เข้าสอบ - ".now()->format('d-m-Y_H-i-s') . '.xlsx';
-		return Excel::download(new ParticipantExportFile, $filename);
+		$filename = now()->format('d-m-Y_H-i-s') . '.xlsx';
+		return Excel::download(new StudentUpdateExportFile, $filename);
 	}
 }

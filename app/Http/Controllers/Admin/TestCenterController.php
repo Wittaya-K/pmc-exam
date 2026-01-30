@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\TestCenterJob;
 
 class TestCenterController extends Controller
 {
@@ -54,8 +55,7 @@ class TestCenterController extends Controller
 		return view('admin.test_center.create');
 	}
 
-	public function save(Request $request)
-    {
+	public function save(Request $request){
         $validator = Validator::make($request->all(), [
             'fileUpload' => 'required|array',
             'fileUpload.*' => 'file|max:102400',
@@ -68,8 +68,11 @@ class TestCenterController extends Controller
             ]);
         }
 
-        $files = $request->file('fileUpload');
+        
 
+        $files = $request->file('fileUpload');
+        // TestCenterJob::dispatch($files); // คำสั่งสร้าง Job สำหรับนำเข้าข้อมูลศูนย์สอบ
+        
         // sort ตามตัวเลขหน้าชื่อไฟล์
         usort($files, function ($a, $b) {
             preg_match('/^\d+/', $a->getClientOriginalName(), $ma);
@@ -98,8 +101,43 @@ class TestCenterController extends Controller
             'message' => 'success'
         ]);
 		
-		return back();
+		// return back();
 	}
+
+    // public function save(Request $request){
+    //     $validator = Validator::make($request->all(), [
+    //         'fileUpload' => 'required|array',
+    //         'fileUpload.*' => 'file|max:102400',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'error' => $validator->errors()
+    //         ]);
+    //     }
+
+    //     $files = $request->file('fileUpload');
+    //     $filePaths = [];
+        
+    //     // เก็บไฟล์ชั่วคราวก่อน
+    //     foreach ($files as $file) {
+    //         $fileName = time() . '_' . $file->getClientOriginalName();
+    //         $file->move(public_path('uploads/temp'), $fileName);
+    //         $filePaths[] = [
+    //             'path' => public_path('uploads/temp/' . $fileName),
+    //             'original_name' => $file->getClientOriginalName()
+    //         ];
+    //     }
+        
+    //     // ส่ง path ไปให้ Job แทน
+    //     TestCenterJob::dispatch($filePaths);
+        
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Files are being processed'
+    //     ]);
+    // }
 
     public function store(Request $request)
     {
@@ -184,7 +222,7 @@ class TestCenterController extends Controller
 
     public function exportFile()
 	{
-		$filename = "ศูนย์สอบ - ".now()->format('d-m-Y_H-i-s') . '.xlsx';
+		$filename = now()->format('d-m-Y_H-i-s') . '.xlsx';
 		return Excel::download(new TestCenterExportFile, $filename);
 	}
 }

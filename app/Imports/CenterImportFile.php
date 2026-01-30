@@ -5,9 +5,10 @@ namespace App\Imports;
 use App\Models\TestCenter;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithStartRow;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
 
-class CenterImportFile implements ToModel, WithStartRow
-
+class CenterImportFile implements ToModel, WithStartRow, WithChunkReading, WithBatchInserts
 {
     /**
      * @param array $row
@@ -32,5 +33,13 @@ class CenterImportFile implements ToModel, WithStartRow
     public function startRow(): int
     {
         return 2; // Skip the first row
+    }
+    public function chunkSize(): int
+    {
+        return 1000; // ปลอดภัยกับ WAMP
+    }
+    public function batchSize(): int
+    {
+        return 1000;
     }
 }

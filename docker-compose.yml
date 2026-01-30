@@ -30,7 +30,7 @@ services:
       MYSQL_USER: pmc-exam
       MYSQL_PASSWORD: uQPFVu(Oyfa3a[H5
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
 

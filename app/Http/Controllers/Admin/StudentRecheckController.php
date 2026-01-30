@@ -224,7 +224,7 @@ class StudentRecheckController extends Controller
     }
     public function exportFile()
     {
-        $filename = "เช็คชื่อผู้เข้าสอบ - " . now()->format('d-m-Y_H-i-s') . '.xlsx';
+        $filename = now()->format('d-m-Y_H-i-s') . '.xlsx';
         return Excel::download(new StudentRecheckExportFile, $filename);
     }
 }

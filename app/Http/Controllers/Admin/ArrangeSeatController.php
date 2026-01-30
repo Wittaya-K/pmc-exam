@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Exception;
+use App\Jobs\ArrangeSeatJob;
 
 class ArrangeSeatController extends Controller
 {
@@ -120,8 +121,10 @@ class ArrangeSeatController extends Controller
 		}
 	}
 
-	public function assignSeats(Request $request)
-	{
+	public function assignSeats(Request $request){
+
+		// ArrangeSeatJob::dispatch();
+
 		// เงื่อนไขศูนย์สอบทั่วไป
 		$examRooms = TestCenter::select(
 			'test_center',
@@ -538,7 +541,16 @@ class ArrangeSeatController extends Controller
 		// echo "จัดที่นั่งเสร็จสิ้น!\n";
 
 		// return $result;
+		return response()->json([
+            'success' => true,
+            'message' => 'success'
+        ]);
 	}
+	// public function assignSeats(Request $request)
+	// {
+
+	// 	ArrangeSeatJob::dispatch();
+	// }
 
 	public function search(Request $request)
 	{
