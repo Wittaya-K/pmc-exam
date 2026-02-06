@@ -18,11 +18,12 @@ class StudentUpdateController extends Controller
     public function index(Request $request)
     {
         abort_unless(Gate::allows('file_import_access'), 403);
-
-        $testCenter = ParticipantImport::select('test_center')->groupBy('test_center')->get();
+        
+        $testCenter = ParticipantImport::select('test_center')->orderBy('test_center')->groupBy('test_center')->get();
         $fNamelname = ParticipantImport::select('first_name_th', 'last_name_th')->orderBy('id', 'asc')->get();
+        $classLevel = ParticipantImport::select('classLevel')->orderBy('classLevel')->groupBy('classLevel')->get();
 
-        return view('admin.student_update.index', compact('testCenter', 'fNamelname'));
+        return view('admin.student_update.index', compact('testCenter', 'fNamelname','classLevel'));
     }
 
     public function create(){

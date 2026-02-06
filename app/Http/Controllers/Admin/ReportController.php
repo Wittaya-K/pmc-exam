@@ -8,12 +8,13 @@ use Elibyy\TCPDF\Facades\TCPDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use TCPDF_FONTS;
+use Illuminate\Support\Facades\Storage;
 
 class ReportController extends Controller
 {
 	public function index()
 	{
-		$testCenter = SeatAssign::select('test_center')->groupBy('test_center')->get(); //ข้อมูลศูนย์สอบ
+		$testCenter = SeatAssign::select('test_center')->orderBy('test_center')->groupBy('test_center')->get(); //ข้อมูลศูนย์สอบ
 		$room       = SeatAssign::select('room')->groupBy('room')->get();               //ข้อมูลผู้เข้าสอบ
 
 		return view('admin.reports.index', compact('testCenter', 'room'));
@@ -23,7 +24,7 @@ class ReportController extends Controller
 	{
 		$testCenter = $request->input('test_center'); // ศูนย์สอบ
 		// $room = $request->input('room');				// ห้องสอบ
-
+		// รายงานใบเซ็นชื่อคณะวิทยาศาสตร์
 		if ($testCenter == 'คณะวิทยาศาสตร์ม.อ.วิทยาเขตหาดใหญ่') {
 			$app = App::getFacadeRoot();
 			$pdf = new TCPDF($app);
@@ -116,8 +117,16 @@ class ReportController extends Controller
 				}
 			}
 
-			$pdf::Output('ใบเซ็นชื่อ.pdf', 'I');
+			// Storage::delete('app/public/reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf');
+			if (Storage::disk('public')->exists('reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf')) { //เช็กก่อนว่ามีไฟล์
+				Storage::disk('public')->delete('reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf');
+			}
+			// $pdf::Output('ใบเซ็นชื่อผู้เข้าสอบ.pdf', 'I');
+			$pdf::Output(storage_path('app/public/reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf'), 'F');
+
+			return redirect()->route('admin.reports.pdfFile');
 		} else {
+			// รายงานใบเซ็นชื่อศูนย์สอบอื่นๆ
 			$app = App::getFacadeRoot();
 			$pdf = new TCPDF($app);
 
@@ -196,12 +205,19 @@ class ReportController extends Controller
 					$pdf::Cell(40, 5, "", 1, 1);
 				}
 			}
+			// Storage::delete('app/public/reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf');
+			if (Storage::disk('public')->exists('reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf')) { //เช็กก่อนว่ามีไฟล์
+				Storage::disk('public')->delete('reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf');
+			}
 
-			$pdf::Output('ใบเซ็นชื่อ.pdf', 'I');
+			// $pdf::Output('ใบเซ็นชื่อผู้เข้าสอบ.pdf', 'I');
+			$pdf::Output(storage_path('app/public/reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf'), 'F');
+
+			return redirect()->route('admin.reports.pdfFile');
 		}
 	}
-	// public function pdfFile()
-	// {
-	// 	return response()->file(storage_path('app/public/reports/ใบเซ็นชื่อ.pdf'), ['content-type' => 'application/pdf']);
-	// }
+	public function pdfFile()
+	{	
+		return response()->file(storage_path('app/public/reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf'), ['content-type' => 'application/pdf','Content-Disposition' => 'inline; filename="ใบเซ็นชื่อผู้เข้าสอบ.pdf"']);
+	}
 }

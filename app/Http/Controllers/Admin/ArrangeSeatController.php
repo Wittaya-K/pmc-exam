@@ -26,6 +26,7 @@ class ArrangeSeatController extends Controller
 
 		$selectTestcenter = SeatAssign::select('test_center')
 			->selectRaw('COUNT(*) as total')
+			->orderBy('test_center')
 			->groupBy('test_center')
 			->get(); //จำนวนนักเรียนแต่ละศูนย์สอบ
 
@@ -44,7 +45,7 @@ class ArrangeSeatController extends Controller
 
 	public function view()
 	{
-		$testCenter = SeatAssign::select('test_center')->groupBy('test_center')->get(); //ข้อมูลศูนย์สอบ
+		$testCenter = SeatAssign::select('test_center')->orderBy('test_center')->groupBy('test_center')->get(); //ข้อมูลศูนย์สอบ
 		$fNamelname = SeatAssign::select('first_name_th', 'last_name_th')->orderBy('id', 'asc')->get(); //ข้อมูลผู้เข้าสอบ
 
 		return view('admin.arrange_seat.view', compact('testCenter', 'fNamelname'));

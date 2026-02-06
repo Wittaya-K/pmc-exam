@@ -160,7 +160,7 @@
                                     {{-- <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fad fa-text"></i></span>
                                         </div> --}}
-                                    <input type="text" class="form-control" id="floor" name="floor" placeholder="" placeholder="" value="" title="" required>
+                                    <input type="number" class="form-control" id="floor" name="floor" placeholder="" placeholder="" value="" title="" required>
                                 </div>
                             </div>
                         </div>
@@ -184,7 +184,7 @@
                                     {{-- <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fad fa-text"></i></span>
                                         </div> --}}
-                                    <input type="text" class="form-control" id="capacity" name="capacity" placeholder="" placeholder="" value="" title="" required>
+                                    <input type="number" class="form-control" id="capacity" name="capacity" placeholder="" placeholder="" value="" title="" required>
                                 </div>
                             </div>
                         </div>

@@ -225,7 +225,13 @@
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label>ระดับการสอบ</label>
-                                <input type="text" class="form-control" id="program_name" name="program_name" required>
+                                {{-- <input type="text" class="form-control" id="program_name" name="program_name" required> --}}
+                                <select name="program_name" id="program_name" class="form-control">
+                                    <option value="">เลือก</option>
+                                    <option value="ประถมปลาย (ป.4 - ป.6)">ประถมปลาย (ป.4 - ป.6)</option>
+                                    <option value="มัธยมต้น (ม.1 - ม.3)">มัธยมต้น (ม.1 - ม.3)</option>
+                                    <option value="มัธยมปลาย (ม.4 - ม.6)">มัธยมปลาย (ม.4 - ม.6)</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -234,13 +240,25 @@
                         <div class="col-lg-4">
                             <div class="form-group">
                                 <label>ศูนย์สอบ</label>
-                                <input type="text" class="form-control" id="test_center_input" name="test_center" required>
+                                {{-- <input type="text" class="form-control" id="test_center_input" name="test_center" required> --}}
+                                <select id="test_center_input" name="test_center" required class="form-control">
+                                    <option value="">เลือก</option>
+                                    @foreach ($testCenter as $item)
+                                        <option value="{{ $item->test_center }}">{{ $item->test_center }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group">
                                 <label>ชั้นการศึกษา</label>
-                                <input type="text" class="form-control" id="classLevel" name="classLevel" required>
+                                {{-- <input type="text" class="form-control" id="classLevel" name="classLevel" required> --}}
+                                <select id="classLevel" name="classLevel" required class="form-control">
+                                    <option value="">เลือก</option>
+                                    @foreach ($classLevel as $item)
+                                        <option value="{{ $item->classLevel }}">{{ $item->classLevel }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="col-lg-4">

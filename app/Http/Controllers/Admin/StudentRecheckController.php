@@ -19,11 +19,12 @@ class StudentRecheckController extends Controller
     {
         abort_unless(Gate::allows('student_recheck_access'), 403);
 
-        $testCenter = TestCenter::select('test_center')->groupBy('test_center')->get();
+        $testCenter = TestCenter::select('test_center')->orderBy('test_center')->groupBy('test_center')->get();
         $fNamelname = SeatAssign::select('first_name_th', 'last_name_th')->orderBy('id', 'asc')->get();
         $room = TestCenter::select('room')->groupBy('room')->get();
+        $classLevel = SeatAssign::select('classLevel')->orderBy('classLevel')->groupBy('classLevel')->get();
 
-        return view('admin.student_recheck.index', compact('testCenter', 'fNamelname', 'room'));
+        return view('admin.student_recheck.index', compact('testCenter', 'fNamelname', 'room','classLevel'));
     }
 
     public function create()

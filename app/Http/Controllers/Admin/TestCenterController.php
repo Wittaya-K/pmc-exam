@@ -34,10 +34,10 @@ class TestCenterController extends Controller
                     'air_condition'=> $row->air_condition,
                     'fan'=> $row->fan,
                     'action' => '
-                            <a href="javascript:void(0)" data-toggle="tooltip" data-id="' . $row->id . '" data-original-title="Edit" class="edit btn btn-xs btn-warning btn-sm editTestCenter">
+                            <a href="javascript:void(0)" data-toggle="tooltip" data-id="' . $row->id . '" data-original-title="Edit" class="btn btn-sm btn-info editTestCenter">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="javascript:void(0)" data-toggle="tooltip" data-id="' . $row->id . '" data-original-title="Delete" class="btn btn-xs btn-danger btn-sm deleteTestCenter">
+                            <a href="javascript:void(0)" data-toggle="tooltip" data-id="' . $row->id . '" data-original-title="Delete" class="btn btn-sm btn-danger deleteTestCenter">
                                 <i class="fas fa-trash-alt"></i>
                             </a>'
                 ];

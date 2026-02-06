@@ -195,13 +195,25 @@
                             <div class="col-lg-4">
                                 <div class="form-group">
                                     <label>ศูนย์สอบ</label>
-                                    <input type="text" class="form-control" id="test_center_input" name="test_center" required>
+                                    {{-- <input type="text" class="form-control" id="test_center_input" name="test_center" required> --}}
+                                    <select id="test_center_input" name="test_center" required class="form-control">
+                                        <option value="">เลือก</option>
+                                        @foreach ($testCenter as $item)
+                                            <option value="{{ $item->test_center }}">{{ $item->test_center }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-lg-4">
                                 <div class="form-group">
                                     <label>ชั้นการศึกษา</label>
-                                    <input type="text" class="form-control" id="classLevel" name="classLevel" required>
+                                    {{-- <input type="text" class="form-control" id="classLevel" name="classLevel" required> --}}
+                                    <select id="classLevel" name="classLevel" required class="form-control">
+                                        <option value="">เลือก</option>
+                                        @foreach ($classLevel as $item)
+                                            <option value="{{ $item->classLevel }}">{{ $item->classLevel }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-lg-4">
@@ -231,7 +243,7 @@
                             <div class="col-lg-4">
                                 <div class="form-group">
                                     <label>โทร</label>
-                                    <input type="text" class="form-control" id="phone" name="phone" required>
+                                    <input type="number" class="form-control" id="phone" name="phone" required>
                                 </div>
                             </div>
                         </div>
