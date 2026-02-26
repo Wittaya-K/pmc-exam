@@ -65,23 +65,6 @@
 </div>
 
 @can('student_recheck_create')
-{{-- <div class="row mb-2">
-            <div class="col-lg-12">
-                <a class="btn btn-primary mr-2" href="javascript:void(0)" id="createStudent">
-                    <i class="fas fa-plus"></i> เพิ่มผู้เข้าสอบ
-                </a>
-                <a class="btn btn-success mr-2" href="javascript:void(0)" id="bulkCheckAttendance">
-                    <i class="fas fa-check-double"></i> เช็คชื่อหลายคน
-                </a>
-
-                <form method="POST" action="{{ route('admin.student_recheck.exportFile') }}">
-@csrf
-<button type="submit" class="btn btn-info d-flex align-items-center h-100 mr-2">
-    <i class="fad fa-download mr-1"></i> ดาวน์โหลด Excel
-</button>
-</form>
-</div>
-</div> --}}
 
 <div class="row mb-2">
     <div class="col-lg-12">

@@ -79,41 +79,6 @@ class FileImportController extends Controller
 		// return back();
 	}
 
-	// public function save(Request $request){
-    //     $validator = Validator::make($request->all(), [
-    //         'fileUpload' => 'required|array',
-    //         'fileUpload.*' => 'file|max:102400',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'error' => $validator->errors()
-    //         ]);
-    //     }
-
-    //     $files = $request->file('fileUpload');
-    //     $filePaths = [];
-        
-    //     // เก็บไฟล์ชั่วคราวก่อน
-    //     foreach ($files as $file) {
-    //         $fileName = time() . '_' . $file->getClientOriginalName();
-    //         $file->move(public_path('uploads/temp'), $fileName);
-    //         $filePaths[] = [
-    //             'path' => public_path('uploads/temp/' . $fileName),
-    //             'original_name' => $file->getClientOriginalName()
-    //         ];
-    //     }
-        
-    //     // ส่ง path ไปให้ Job แทน
-    //     StudentImportJob::dispatch($filePaths);
-        
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Files are being processed'
-    //     ]);
-    // }
-
     public function update(Request $request, $id = ""){
 
 		$validator = Validator::make($request->all(), [

@@ -34,33 +34,73 @@
                             </p>
                             @endif
                             {{-- <form action="{{ route('login') }}" method="POST">
-                                {{ csrf_field() }}
-                                <div class="form-group mb-3">
-                                    <input type="text" placeholder="PSU Passport Account Name" name="username" autofocus="" class="form-control rounded-pill border-0 shadow-sm px-4 @error('username') is-invalid @enderror">
-                                    @error('username')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                    @enderror
+                            {{ csrf_field() }}
+                            <div class="form-group mb-3">
+                                <input type="text" placeholder="PSU Passport Account Name" name="username" autofocus="" class="form-control rounded-pill border-0 shadow-sm px-4 @error('username') is-invalid @enderror">
+                                @error('username')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
                                 </div>
-                                <div class="form-group mb-3">
-                                    <input type="password" placeholder="Password" name="password" class="form-control rounded-pill border-0 shadow-sm px-4 text-primary @error('password') is-invalid @enderror">
-                                    @error('password')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                    @enderror
+                                @enderror
+                            </div>
+                            <div class="form-group mb-3">
+                                <input type="password" placeholder="Password" name="password" class="form-control rounded-pill border-0 shadow-sm px-4 text-primary @error('password') is-invalid @enderror">
+                                @error('password')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm"><i class="fad fa-sign-in"></i> {{ trans('global.login') }}</button>
+                                @enderror
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm"><i class="fad fa-sign-in"></i> {{ trans('global.login') }}</button>
                             </form> --}}
                             <a href="{{ url('/auth/redirect') }}" class="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm" style="background-color: white;">
                                 <i class="fad fa-sign-in"></i> เข้าสู่ระบบด้วย PSU Passport
                             </a>
                         </div>
                     </div>
+                    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                    <div class="d-flex align-items-stretch flex-column">
+                        <div class="card bg-light d-flex flex-fill">
+                            <div class="card-header text-muted border-bottom-0">
+                                ติดต่อ
+                            </div>
+                            <div class="card-body pt-0">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <ul class="ml-4 mb-0 fa-ul text-muted">
+                                            <li class="small"><span class="fa-li"><i class="fas fa-phone-office"></i></span> โทร: 0-7428-8620</li>
+                                            <li class="small"><span class="fa-li"><i class="fas fa-envelope"></i></span> เมล: wittaya.kh@psu.ac.th</li>
+                                            <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Address: คณะวิทยาศาสตร์ มหาวิทยาลัยสงขลานครินทร์</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- <br><br><br><br><br><br><br><br><br><br> --}}
+                    {{-- <div class="">
+                        <div class="card-header">
+                            <h3 class="card-title">ติดต่อ</h3>
+                        </div>
+
+                        <div class="card-body">
+                            <strong><i class="fas fa-phone-office mr-1"></i> โทร</strong>
+                            <p class="text-muted">
+                                0-7428-8620
+                            </p>
+
+                            <strong><i class="fas fa-envelope mr-1"></i> เมล</strong>
+                            <p class="text-muted">
+                                wittaya.kh@psu.ac.th
+                            </p>
+                            
+                        </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
     </div>
 </div>
 @endsection
+

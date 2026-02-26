@@ -22,28 +22,7 @@
     </div>
 </div>
 @can('test_center_create')
-{{-- <div class="row mb-2">
-    <div class="col-lg-12">
-        <a class="btn btn-primary mr-2" href="javascript:void(0)" id="createTestCenter"><i class="fad fa-folder-plus"></i>
-            เพิ่มศูนย์สอบ</a>
-        <a class="btn btn-success mr-2" href="{{ route('admin.test_center.create') }}"><i class="fad fa-file-spreadsheet"></i></i> นำเข้าไฟล์ศูนย์สอบ Excel</a>
-        <form action="{{ route('admin.test_center.resetTestCenter') }}" method="POST" style="display:inline">
-            @csrf
-            <button class="btn btn-dark mr-2" onclick="return confirm('ยืนยันการรีเซ็ตศูนย์สอบทั้งหมด ?')">
-                <i class="fad fa-undo"></i> รีเซ็ตศูนย์สอบ
-            </button>
-        </form>
-        <button class="btn btn-danger mr-2" id="bulkDeleteBtn" style="display:none;">
-            <i class="fad fa-trash-alt"></i> ลบรายการที่เลือก (<span id="selectedCount">0</span>)
-        </button>
-        <form method="POST" id="export_file_form" action="{{ route('admin.test_center.exportFile') }}">
-            @csrf
-            <button type="submit" class="btn btn-warning mr-2">
-                <i class="fad fa-download"></i> ดาวน์โหลดไฟล์ Excel
-            </button>
-        </form>
-    </div>
-</div> --}}
+
 <div class="row mb-2">
     <div class="col-lg-12">
         <div class="d-flex flex-wrap align-items-stretch gap-2">
