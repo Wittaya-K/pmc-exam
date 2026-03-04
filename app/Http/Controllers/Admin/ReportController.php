@@ -98,8 +98,8 @@ class ReportController extends Controller
 				$pdf::Cell(32, 7, "ชื่อ", 1, 0, 'C', 1);
 				$pdf::Cell(32, 7, "สกุล", 1, 0, 'C', 1);
 				$pdf::Cell(40, 7, "ระดับการสอบ", 1, 0, 'C', 1);
-				$pdf::Cell(18, 7, "เลขที่นั่ง", 1, 0, 'C', 1);
 				$pdf::Cell(18, 7, "แถว", 1, 0, 'C', 1);
+				$pdf::Cell(18, 7, "เลขที่นั่ง", 1, 0, 'C', 1);
 				$pdf::Cell(22, 7, "ลงลายมือชื่อ", 1, 1, 'C', 1);
 
 				// ===== Data =====
@@ -111,8 +111,8 @@ class ReportController extends Controller
 					$pdf::Cell(32, 7, $row->first_name_th, 1);
 					$pdf::Cell(32, 7, $row->last_name_th, 1);
 					$pdf::Cell(40, 7, $row->program_name, 1);
-					$pdf::Cell(18, 7, $row->seat_no, 1, 0, 'C');
 					$pdf::Cell(18, 7, $row->session, 1, 0, 'C');
+					$pdf::Cell(18, 7, $row->seat_no, 1, 0, 'C');
 					$pdf::Cell(22, 7, "", 1, 1);
 				}
 			}

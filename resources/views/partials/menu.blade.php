@@ -61,14 +61,14 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="{{ route('admin.student_update.index') }}" class="nav-link {{ request()->is('admin/student_update') || request()->is('admin/student_update/*') ? 'active' : '' }}">
                                 <i class="fad fa-chevron-circle-right"></i>
                                 <p>
                                     <span>ปรับปรุงข้อมูล</span>
                                 </p>
                             </a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </li>
                 @endcan
@@ -94,7 +94,7 @@
                 </li>
                 @endcan
                 @can('student_recheck_access')
-                <li class="nav-item has-treeview {{ request()->is('admin/student_recheck*') ? 'menu-open' : '' }}">
+                {{-- <li class="nav-item has-treeview {{ request()->is('admin/student_recheck*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
                         <i class="fad fa-folder"></i>
                         <p>
@@ -112,10 +112,10 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
                 @endcan
                 @can('report_access')
-                <li class="nav-item has-treeview {{ request()->is('admin/reports*') ? 'menu-open' : '' }}">
+                {{-- <li class="nav-item has-treeview {{ request()->is('admin/reports*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
                         <i class="fad fa-folder"></i>
                         <p>
@@ -133,7 +133,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
                 @endcan
                 @can('user_management_access')
                 <li class="nav-item has-treeview {{ request()->is('admin/permissions*') ? 'menu-open' : '' }} {{ request()->is('admin/roles*') ? 'menu-open' : '' }} {{ request()->is('admin/users*') ? 'menu-open' : '' }}">
