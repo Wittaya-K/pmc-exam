@@ -14,6 +14,7 @@
         "doctrine/dbal": "^3.0",
         "elibyy/tcpdf-laravel": "^10.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "inertiajs/inertia-laravel": "^2.0",
         "laragear/preload": "^2.1",
         "laravel/framework": "^10.0",
         "laravel/passport": "^11.0",

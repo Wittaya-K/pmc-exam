@@ -7,6 +7,7 @@ use App\Http\Requests\MassDestroyPermissionRequest;
 use App\Http\Requests\StorePermissionRequest;
 use App\Http\Requests\UpdatePermissionRequest;
 use App\Permission;
+use Inertia\Inertia;
 
 class PermissionsController extends Controller
 {
@@ -16,14 +17,25 @@ class PermissionsController extends Controller
 
         $permissions = Permission::all();
 
-        return view('admin.permissions.index', compact('permissions'));
+        return Inertia::render('Admin/Permissions/Index', [
+            'permissions' => $permissions->map(fn ($p) => [
+                'id' => $p->id,
+                'title' => $p->title,
+            ])->values(),
+            'can' => [
+                'create' => \Gate::allows('permission_create'),
+                'show' => \Gate::allows('permission_show'),
+                'edit' => \Gate::allows('permission_edit'),
+                'delete' => \Gate::allows('permission_delete'),
+            ],
+        ]);
     }
 
     public function create()
     {
         abort_unless(\Gate::allows('permission_create'), 403);
 
-        return view('admin.permissions.create');
+        return Inertia::render('Admin/Permissions/Create');
     }
 
     public function store(StorePermissionRequest $request)
@@ -39,7 +51,12 @@ class PermissionsController extends Controller
     {
         abort_unless(\Gate::allows('permission_edit'), 403);
 
-        return view('admin.permissions.edit', compact('permission'));
+        return Inertia::render('Admin/Permissions/Edit', [
+            'permission' => [
+                'id' => $permission->id,
+                'title' => $permission->title,
+            ],
+        ]);
     }
 
     public function update(UpdatePermissionRequest $request, Permission $permission)
@@ -55,7 +72,16 @@ class PermissionsController extends Controller
     {
         abort_unless(\Gate::allows('permission_show'), 403);
 
-        return view('admin.permissions.show', compact('permission'));
+        return Inertia::render('Admin/Permissions/Show', [
+            'permission' => [
+                'id' => $permission->id,
+                'title' => $permission->title,
+            ],
+            'can' => [
+                'edit' => \Gate::allows('permission_edit'),
+                'delete' => \Gate::allows('permission_delete'),
+            ],
+        ]);
     }
 
     public function destroy(Permission $permission)

@@ -10,6 +10,7 @@ use App\Role;
 use App\User;
 
 use Illuminate\Support\Facades\Gate;
+use Inertia\Inertia;
 
 class UsersController extends Controller
 {
@@ -17,18 +18,40 @@ class UsersController extends Controller
     {
         abort_unless(Gate::allows('user_access'), 403);
 
-        $users = User::all();
+        $users = User::with('roles')->get();
 
-        return view('admin.users.index', compact('users'));
+        return Inertia::render('Admin/Users/Index', [
+            'users' => $users->map(fn ($u) => [
+                'id' => $u->id,
+                'name' => $u->name,
+                'email' => $u->email,
+                'email_verified_at' => $u->email_verified_at?->toISOString(),
+                'roles' => $u->roles->map(fn ($r) => [
+                    'id' => $r->id,
+                    'title' => $r->title,
+                ])->values(),
+            ])->values(),
+            'can' => [
+                'create' => Gate::allows('user_create'),
+                'show' => Gate::allows('user_show'),
+                'edit' => Gate::allows('user_edit'),
+                'delete' => Gate::allows('user_delete'),
+            ],
+        ]);
     }
 
     public function create()
     {
         abort_unless(Gate::allows('user_create'), 403);
 
-        $roles = Role::all()->pluck('title', 'id');
+        $roles = Role::all()->map(fn ($r) => [
+            'id' => $r->id,
+            'title' => $r->title,
+        ])->values();
 
-        return view('admin.users.create', compact('roles'));
+        return Inertia::render('Admin/Users/Create', [
+            'roles' => $roles,
+        ]);
     }
 
     public function store(StoreUserRequest $request)
@@ -45,11 +68,23 @@ class UsersController extends Controller
     {
         abort_unless(Gate::allows('user_edit'), 403);
 
-        $roles = Role::all()->pluck('title', 'id');
+        $roles = Role::all()->map(fn ($r) => [
+            'id' => $r->id,
+            'title' => $r->title,
+        ])->values();
         
         $user->load('roles');
 
-        return view('admin.users.edit', compact('roles', 'user'));
+        return Inertia::render('Admin/Users/Edit', [
+            'roles' => $roles,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'email_verified_at' => $user->email_verified_at?->toISOString(),
+                'role_ids' => $user->roles->pluck('id')->values(),
+            ],
+        ]);
     }
 
     public function update(UpdateUserRequest $request, User $user)
@@ -68,7 +103,22 @@ class UsersController extends Controller
 
         $user->load('roles');
 
-        return view('admin.users.show', compact('user'));
+        return Inertia::render('Admin/Users/Show', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'email_verified_at' => $user->email_verified_at?->toISOString(),
+                'roles' => $user->roles->map(fn ($r) => [
+                    'id' => $r->id,
+                    'title' => $r->title,
+                ])->values(),
+            ],
+            'can' => [
+                'edit' => Gate::allows('user_edit'),
+                'delete' => Gate::allows('user_delete'),
+            ],
+        ]);
     }
 
     public function destroy(User $user)

@@ -9,15 +9,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Jobs\StudentImportJob;
+use Inertia\Inertia;
 
 class FileImportController extends Controller
 {
 	public function index(){
-		return view('admin.file_import.index');
+		return Inertia::render('Admin/FileImport/Index');
 	}
 
     public function create(){
-		return view('admin.file_import.create');
+		return Inertia::render('Admin/FileImport/Create');
 	}
 
     public function edit($id){
