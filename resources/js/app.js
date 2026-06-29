@@ -1,40 +1,33 @@
-import './bootstrap'
 
-import { createInertiaApp } from '@inertiajs/vue3'
-import { createApp, h } from 'vue'
-import { applyTheme, setupSystemThemeListener } from './theme'
+/**
+ * First we will load all of this project's JavaScript dependencies which
+ * includes Vue and other libraries. It is a great starting point when
+ * building robust, powerful web applications using Vue and Laravel.
+ */
 
-applyTheme()
-setupSystemThemeListener()
+require('./bootstrap');
 
-const el = document.getElementById('app')
-if (!el) {
-  throw new Error('Inertia root element "#app" not found. Make sure the response is using resources/views/app.blade.php and contains @inertia.')
-}
-if (!el.dataset.page) {
-  throw new Error('Inertia root element "#app" is missing the "data-page" attribute. Make sure the response contains @inertia and is not a legacy Blade login view.')
-}
+window.Vue = require('vue');
 
-let initialPage
-try {
-  initialPage = JSON.parse(el.dataset.page)
-} catch (err) {
-  const preview = String(el.dataset.page).slice(0, 200)
-  throw new Error(`Failed to parse Inertia data-page JSON. Preview: ${preview}`)
-}
+/**
+ * The following block of code may be used to automatically register your
+ * Vue components. It will recursively scan this directory for the Vue
+ * components and automatically register them with their "basename".
+ *
+ * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
+ */
 
-createInertiaApp({
-  page: initialPage,
-  resolve: (name) => {
-    const pages = import.meta.glob('./Pages/**/*.vue')
-    const path = `./Pages/${name}.vue`
-    const importer = pages[path]
-    if (!importer) {
-      throw new Error(`Inertia page not found: ${path}`)
-    }
-    return importer().then((module) => module.default)
-  },
-  setup({ el, App, props, plugin }) {
-    createApp({ render: () => h(App, props) }).use(plugin).mount(el)
-  },
-})
+// const files = require.context('./', true, /\.vue$/i);
+// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
+
+Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+
+/**
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
+ */
+
+const app = new Vue({
+    el: '#app'
+});

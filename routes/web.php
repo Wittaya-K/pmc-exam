@@ -8,7 +8,6 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\StudentRecheckController;
 use App\Http\Controllers\Admin\StudentUpdateController;
 use App\User;
-use Inertia\Inertia;
 use Laravel\Socialite\Facades\Socialite;
 
 Route::redirect('/', '/login');
@@ -21,10 +20,6 @@ Route::redirect('/', '/login');
 Route::redirect('/home', '/admin');
 
 Auth::routes(['register' => false]);
-
-Route::get('/login', function () {
-    return Inertia::render('Auth/Login');
-})->middleware('guest')->name('login');
 
 Route::get('/auth/redirect', function () {
     return Socialite::driver('azure')->redirect();
@@ -168,7 +163,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
             Route::get('view', 'view')->name('view');
             Route::post('update/{id?}', 'update')->name('update');
             Route::post('assignSeats/', 'assignSeats')->name('assignSeats');
-            Route::get('assignSeats/status', 'assignSeatsStatus')->name('assignSeatsStatus');
             Route::post('search/', 'search')->name('search');
             Route::post('exportFile/', action: 'exportFile')->name('exportFile');
             Route::post('resetAssignSeats', 'resetAssignSeats')->name('resetAssignSeats');

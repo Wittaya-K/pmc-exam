@@ -11,7 +11,6 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\TestCenterJob;
-use Inertia\Inertia;
 
 class TestCenterController extends Controller
 {
@@ -19,8 +18,7 @@ class TestCenterController extends Controller
     {
         abort_unless(Gate::allows('test_center_access'), 403);
 
-        // Inertia navigations are AJAX (XHR) too. Only return JSON for non-Inertia AJAX calls.
-        if ($request->ajax() && !$request->header('X-Inertia')) {
+        if ($request->ajax()) {
             $data = TestCenter::all();
             $result = [];
             $index = 1;
@@ -48,19 +46,13 @@ class TestCenterController extends Controller
             return response()->json(['data' => $result]);
         }
 
-        return Inertia::render('Admin/TestCenter/Index', [
-            'can' => [
-                'create' => Gate::allows('test_center_create'),
-                'edit' => Gate::allows('test_center_edit'),
-                'delete' => Gate::allows('test_center_delete'),
-            ],
-        ]);
+        return view('admin.test_center.index');
     }
 
     public function create(){
         abort_unless(Gate::allows('test_center_create'), 403);
         
-		return Inertia::render('Admin/TestCenter/Create');
+		return view('admin.test_center.create');
 	}
 
 	public function save(Request $request){

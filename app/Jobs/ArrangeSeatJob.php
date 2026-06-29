@@ -15,26 +15,20 @@ use App\Models\ParticipantImport;
 use Exception;
 use App\Models\SeatAssign;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
-use App\Models\ArrangeSeatRun;
-use Throwable;
 
 class ArrangeSeatJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 0;
-    public $tries = 1;
-
-    private int $runId;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(int $runId)
+    public function __construct()
     {
-        $this->runId = $runId;
+
     }
 
     /**
@@ -44,30 +38,6 @@ class ArrangeSeatJob implements ShouldQueue
      */
     public function handle()
     {
-        $run = ArrangeSeatRun::find($this->runId);
-        if (!$run) {
-            return;
-        }
-
-        // Prevent concurrent runs across workers.
-        $lock = Cache::lock('arrange_seat:assignSeats', 60 * 60);
-        if (!$lock->get()) {
-            $run->update([
-                'status' => 'failed',
-                'finished_at' => now(),
-                'error' => 'Another arrange seat job is already running.',
-            ]);
-            return;
-        }
-
-        $run->update([
-            'status' => 'running',
-            'started_at' => now(),
-            'finished_at' => null,
-            'error' => null,
-        ]);
-
-        try {
 		// เงื่อนไขศูนย์สอบทั่วไป
 		$examRooms = TestCenter::select(
 			'test_center',
@@ -484,21 +454,5 @@ class ArrangeSeatJob implements ShouldQueue
 		// echo "จัดที่นั่งเสร็จสิ้น!\n";
 
         Log::info('Processing completed for ' . count($result) . ' files');
-
-        $run->update([
-            'status' => 'succeeded',
-            'finished_at' => now(),
-        ]);
-        } catch (Throwable $e) {
-            $run->update([
-                'status' => 'failed',
-                'finished_at' => now(),
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        } finally {
-            optional($lock)->release();
-        }
     }
 }

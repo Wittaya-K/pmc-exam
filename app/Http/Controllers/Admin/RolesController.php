@@ -8,7 +8,6 @@ use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Permission;
 use App\Role;
-use Inertia\Inertia;
 
 class RolesController extends Controller
 {
@@ -16,40 +15,18 @@ class RolesController extends Controller
     {
         abort_unless(\Gate::allows('role_access'), 403);
 
-        $roles = Role::with('permissions')->get();
+        $roles = Role::all();
 
-        return Inertia::render('Admin/Roles/Index', [
-            'roles' => $roles->map(fn ($r) => [
-                'id' => $r->id,
-                'title' => $r->title,
-                'permissions' => $r->permissions->map(fn ($p) => [
-                    'id' => $p->id,
-                    'title' => $p->title,
-                ])->values(),
-            ])->values(),
-            'can' => [
-                'create' => \Gate::allows('role_create'),
-                'show' => \Gate::allows('role_show'),
-                'edit' => \Gate::allows('role_edit'),
-                'delete' => \Gate::allows('role_delete'),
-            ],
-        ]);
+        return view('admin.roles.index', compact('roles'));
     }
 
     public function create()
     {
         abort_unless(\Gate::allows('role_create'), 403);
 
-        $permissions = Permission::all()
-            ->map(fn ($p) => [
-                'id' => $p->id,
-                'title' => $p->title,
-            ])
-            ->values();
+        $permissions = Permission::all()->pluck('title', 'id');
 
-        return Inertia::render('Admin/Roles/Create', [
-            'permissions' => $permissions,
-        ]);
+        return view('admin.roles.create', compact('permissions'));
     }
 
     public function store(StoreRoleRequest $request)
@@ -66,23 +43,11 @@ class RolesController extends Controller
     {
         abort_unless(\Gate::allows('role_edit'), 403);
 
-        $permissions = Permission::all()
-            ->map(fn ($p) => [
-                'id' => $p->id,
-                'title' => $p->title,
-            ])
-            ->values();
+        $permissions = Permission::all()->pluck('title', 'id');
 
         $role->load('permissions');
 
-        return Inertia::render('Admin/Roles/Edit', [
-            'permissions' => $permissions,
-            'role' => [
-                'id' => $role->id,
-                'title' => $role->title,
-                'permission_ids' => $role->permissions->pluck('id')->values(),
-            ],
-        ]);
+        return view('admin.roles.edit', compact('permissions', 'role'));
     }
 
     public function update(UpdateRoleRequest $request, Role $role)
@@ -101,20 +66,7 @@ class RolesController extends Controller
 
         $role->load('permissions');
 
-        return Inertia::render('Admin/Roles/Show', [
-            'role' => [
-                'id' => $role->id,
-                'title' => $role->title,
-                'permissions' => $role->permissions->map(fn ($p) => [
-                    'id' => $p->id,
-                    'title' => $p->title,
-                ])->values(),
-            ],
-            'can' => [
-                'edit' => \Gate::allows('role_edit'),
-                'delete' => \Gate::allows('role_delete'),
-            ],
-        ]);
+        return view('admin.roles.show', compact('role'));
     }
 
     public function destroy(Role $role)

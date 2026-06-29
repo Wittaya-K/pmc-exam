@@ -197,7 +197,7 @@
                 },
                 complete: function() {
                     waitingDialog.hide();
-                    location.reload();
+                    // location.reload();
                 },
                 error: function(error) {
                     console.log(error);
