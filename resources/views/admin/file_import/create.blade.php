@@ -115,7 +115,7 @@
                             icon: "success"
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // window.history.back();
+                                window.history.back();
                             }
                         });
                     } else {
@@ -125,7 +125,7 @@
                 complete: function() {
                     waitingDialog.hide();
                     // location.reload();
-                    // window.history.back();
+                    window.history.back();
                 },
                 error: function(error) {
                     console.log(error);
