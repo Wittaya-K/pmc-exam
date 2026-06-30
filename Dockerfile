@@ -31,16 +31,13 @@ RUN composer dump-autoload --optimize --no-dev
 COPY php-fpm.conf /usr/local/etc/php-fpm.d/zz-custom.conf
 
 # สร้าง directory ที่จำเป็นถ้ายังไม่มี
+# หมายเหตุ: chown/chmod ตอน build time ไม่มีผล เพราะ docker-compose mount
+# volume (.:/var/www/html) ทับทุกครั้งที่ start - permission จริงจัดการใน
+# docker-entrypoint.sh แทน
 RUN mkdir -p storage/framework/{sessions,views,cache} \
     && mkdir -p storage/logs \
-    && mkdir -p bootstrap/cache
-
-# ให้สิทธิ์ storage และ bootstrap/cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
-RUN chown -R www-data:www-data /var/www/html/public/uploads \
-    && chmod -R 775 /var/www/html/public/uploads
+    && mkdir -p bootstrap/cache \
+    && mkdir -p public/uploads/temp
 
 # Clear และ cache Laravel (ถ้ามี .env ในขั้นตอน build)
 # หมายเหตุ: key:generate ควรทำตอน runtime ไม่ใช่ build time
@@ -56,13 +53,6 @@ RUN php artisan config:clear \
 #     && php artisan view:cache
 
 # Copy entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-EXPOSE 9000
-
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["php-fpm"]1~# Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
