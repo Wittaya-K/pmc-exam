@@ -20,6 +20,7 @@ if [ -f "$PROJECT_DIR/.env" ]; then
 fi
 
 echo "==> [2/9] ลบโฟลเดอร์เก่าและ clone ใหม่"
+cd /tmp   # ออกจาก PROJECT_DIR ก่อนลบ กัน error cwd หาย
 sudo rm -rf "$PROJECT_DIR"
 sudo git clone --branch "$BRANCH" "$REPO_URL" "$PROJECT_DIR"
 cd "$PROJECT_DIR"
