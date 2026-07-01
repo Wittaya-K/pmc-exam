@@ -210,7 +210,7 @@
             let url = $(this).attr('action');
             let token = $('input[name="_token"]', this).val();
 
-            waitingDialog.show('กำลังดาวน์โหลดออกไฟล์ Excel...', {
+            waitingDialog.show('กำลังดาวน์โหลดไฟล์ Excel...', {
                 onShow: function() {},
                 onHide: function() {}
             });

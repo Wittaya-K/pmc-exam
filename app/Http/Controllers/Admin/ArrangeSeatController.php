@@ -124,9 +124,26 @@ class ArrangeSeatController extends Controller
         // ============================================
         // ส่วนที่ 1: ศูนย์สอบทั่วไป (ไม่มี session A/B)
         // ============================================
+        $psuCenter = ParticipantImport::distinct()->where('test_center', 'like', '%คณะวิทยาศาสตร์%ม.อ%')
+            ->value('test_center');
+
+        if (!$psuCenter) {
+            throw new Exception("ไม่พบข้อมูลศูนย์สอบคณะวิทยาศาสตร์ ม.อ.");
+        }
+
+        // dd($psuCenter);
+        // $psuCenter = 'คณะวิทยาศาสตร์ม.อ.วิทยาเขตหาดใหญ่';
+
+        // หาชื่อจริงจาก TestCenter แยกต่างหาก
+        $psuCenterInTestCenter = TestCenter::where('test_center', 'like', '%คณะวิทยาศาสตร์%ม.อ%')
+            ->value('test_center');
+
+        if (!$psuCenterInTestCenter) {
+            throw new Exception("ไม่พบข้อมูลห้องสอบคณะวิทยาศาสตร์ ม.อ. ใน TestCenter");
+        }
 
         $generalCenters = TestCenter::select('test_center')
-            ->where('test_center', '!=', 'คณะวิทยาศาสตร์ม.อ.วิทยาเขตหาดใหญ่')
+            ->where('test_center', '!=', $psuCenterInTestCenter)
             ->groupBy('test_center')
             ->pluck('test_center')
             ->toArray();
@@ -155,14 +172,14 @@ class ArrangeSeatController extends Controller
             //     $query->whereIn('test_center', $generalCenters)
             //         ->orWhereIn('test_center', $generalCentersWithoutPrefix);
             // })
-            ->where('test_center', '!=', 'คณะวิทยาศาสตร์ม.อ.วิทยาเขตหาดใหญ่')
+            ->where('test_center', '!=', $psuCenter)
             ->orderBy('test_center', 'asc')
             ->orderBy('program_name', 'asc')
             ->orderBy('id', 'asc')
             ->get()
             // ->map(function ($student) {
             //     if (! str_starts_with($student->test_center, 'โรงเรียน')
-            //         && $student->test_center !== 'คณะวิทยาศาสตร์ม.อ.วิทยาเขตหาดใหญ่'
+            //         && $student->test_center !== $psuCenter
             //     ) {
             //         $student->test_center = 'โรงเรียน' . $student->test_center;
             //     }
@@ -252,12 +269,12 @@ class ArrangeSeatController extends Controller
         // ส่วนที่ 2: คณะวิทยาศาสตร์ ม.อ. (มี session A/B)
         // ============================================
 
-        $psuCenter = 'คณะวิทยาศาสตร์ม.อ.วิทยาเขตหาดใหญ่';
+        // $psuCenter = 'คณะวิทยาศาสตร์ม.อ.วิทยาเขตหาดใหญ่';
 
         $examRoomsPsu = TestCenter::select(
             'test_center', 'building', 'floor', 'room', 'capacity', 'session'
         )
-            ->where('test_center', '=', $psuCenter)
+            ->where('test_center', '=', $psuCenterInTestCenter)
             ->orderBy('floor')
             ->orderBy('room')
             ->orderBy('session')
@@ -275,7 +292,7 @@ class ArrangeSeatController extends Controller
 
         // ดึง capacity แต่ละ session
         $getCapacity = TestCenter::select('session', DB::raw('SUM(capacity) as total_capacity'))
-            ->where('test_center', $psuCenter)
+            ->where('test_center', $psuCenterInTestCenter)
             ->groupBy('session')
             ->pluck('total_capacity', 'session');
 
