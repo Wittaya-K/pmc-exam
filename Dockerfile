@@ -60,6 +60,9 @@ RUN php artisan config:clear \
 #     && php artisan route:cache \
 #     && php artisan view:cache
 
+RUN echo "max_input_time = 300" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "max_execution_time = 300" >> /usr/local/etc/php/conf.d/custom.ini
+
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
