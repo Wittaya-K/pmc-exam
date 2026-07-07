@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ArrangeSeatController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\StudentRecheckController;
 use App\Http\Controllers\Admin\StudentUpdateController;
+use App\Http\Controllers\Admin\ReportHeaderController;
 use App\User;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -62,7 +63,7 @@ Route::get('/auth/callback', function () {
 });
 
 Route::get('/logout-azure', function () {
-    
+
     // Logout Laravel session
     Auth::logout();
     session()->invalidate();
@@ -87,13 +88,24 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     Route::resource('test_center', TestCenterController::class);
     Route::post('save/', 'TestCenterController@save')->name('save');
-    
+
     Route::group(['prefix' => 'test_center', 'as' => 'test_center.'], function(){
         Route::controller(TestCenterController::class)->group(function () {
             Route::post('save/', 'save')->name('save');
             Route::post('resetTestCenter', 'resetTestCenter')->name('resetTestCenter');
             Route::post('bulk-delete','bulkDelete')->name('bulkDelete');
             Route::post('exportFile', action: 'exportFile')->name('exportFile');
+        });
+    });
+
+    Route::group(['prefix' => 'report_header', 'as' => 'report_header.'], function(){
+        Route::controller(ReportHeaderController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/store', 'store')->name('store');
+            Route::get('/{id}/edit', 'edit')->name('edit');
+            Route::delete('/{id}', 'destroy')->name('destroy');
+            Route::post('save/', 'save')->name('save');
         });
     });
 
@@ -105,11 +117,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
             Route::post('/store', 'store')->name('store');
             Route::get('/{id}/edit', 'edit')->name('edit');
             Route::delete('/{id}', 'destroy')->name('destroy');
-            
+
             // Routes สำหรับการค้นหา
             Route::post('/search-student', 'searchStudent')->name('searchStudent');
             Route::post('/get-student', 'getStudent')->name('getStudent');
-            
+
             // Routes สำหรับการเช็คชื่อ
             Route::post('/update-attendance', 'updateAttendance')->name('updateAttendance');
             Route::post('/bulk-update-attendance', 'bulkUpdateAttendance')->name('bulkUpdateAttendance');
@@ -118,7 +130,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
             Route::post('exportFile', action: 'exportFile')->name('exportFile');
         });
     });
-    
+
     // Student Recheck Routes
     Route::group(['prefix' => 'student_recheck', 'as' => 'student_recheck.'], function () {
         Route::controller(StudentRecheckController::class)->group(function () {
@@ -127,11 +139,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
             Route::post('/store', 'store')->name('store');
             Route::get('/{id}/edit', 'edit')->name('edit');
             Route::delete('/{id}', 'destroy')->name('destroy');
-            
+
             // Routes สำหรับการค้นหา
             Route::post('/search-student', 'searchStudent')->name('searchStudent');
             Route::post('/get-student', 'getStudent')->name('getStudent');
-            
+
             // Routes สำหรับการเช็คชื่อ
             Route::post('/update-attendance', 'updateAttendance')->name('updateAttendance');
             Route::post('/bulk-update-attendance', 'bulkUpdateAttendance')->name('bulkUpdateAttendance');

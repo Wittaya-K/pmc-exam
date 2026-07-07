@@ -131,9 +131,6 @@ class ArrangeSeatController extends Controller
             throw new Exception("ไม่พบข้อมูลศูนย์สอบคณะวิทยาศาสตร์ ม.อ.");
         }
 
-        // dd($psuCenter);
-        // $psuCenter = 'คณะวิทยาศาสตร์ม.อ.วิทยาเขตหาดใหญ่';
-
         // หาชื่อจริงจาก TestCenter แยกต่างหาก
         $psuCenterInTestCenter = TestCenter::where('test_center', 'like', '%คณะวิทยาศาสตร์%ม.อ%')
             ->value('test_center');
@@ -147,11 +144,6 @@ class ArrangeSeatController extends Controller
             ->groupBy('test_center')
             ->pluck('test_center')
             ->toArray();
-
-        // $generalCentersWithoutPrefix = array_map(
-        //     fn($c) => str_replace('โรงเรียน', '', $c),
-        //     $generalCenters
-        // );
 
         $examRoomsGeneral = TestCenter::select(
             'test_center', 'building', 'floor', 'room', 'capacity', 'session'
@@ -168,23 +160,11 @@ class ArrangeSeatController extends Controller
             'id', 'title_th', 'first_name_th', 'last_name_th',
             'classLevel', 'level', 'school', 'program_name', 'test_center'
         )
-            // ->where(function ($query) use ($generalCenters, $generalCentersWithoutPrefix) {
-            //     $query->whereIn('test_center', $generalCenters)
-            //         ->orWhereIn('test_center', $generalCentersWithoutPrefix);
-            // })
             ->where('test_center', '!=', $psuCenter)
             ->orderBy('test_center', 'asc')
             ->orderBy('program_name', 'asc')
             ->orderBy('id', 'asc')
             ->get()
-            // ->map(function ($student) {
-            //     if (! str_starts_with($student->test_center, 'โรงเรียน')
-            //         && $student->test_center !== $psuCenter
-            //     ) {
-            //         $student->test_center = 'โรงเรียน' . $student->test_center;
-            //     }
-            //     return $student;
-            // })
             ->groupBy('test_center');
 
         $result = [];
