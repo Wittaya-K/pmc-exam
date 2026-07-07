@@ -22,62 +22,34 @@
     </div>
 </div>
 @can('test_center_create')
-{{-- <div class="row mb-2">
-    <div class="col-lg-12">
-        <a class="btn btn-primary mr-2" href="javascript:void(0)" id="createTestCenter"><i class="fad fa-folder-plus"></i>
-            เพิ่มศูนย์สอบ</a>
-        <a class="btn btn-success mr-2" href="{{ route('admin.test_center.create') }}"><i class="fad fa-file-spreadsheet"></i></i> นำเข้าไฟล์ศูนย์สอบ Excel</a>
-        <form action="{{ route('admin.test_center.resetTestCenter') }}" method="POST" style="display:inline">
-            @csrf
-            <button class="btn btn-dark mr-2" onclick="return confirm('ยืนยันการรีเซ็ตศูนย์สอบทั้งหมด ?')">
-                <i class="fad fa-undo"></i> รีเซ็ตศูนย์สอบ
-            </button>
-        </form>
-        <button class="btn btn-danger mr-2" id="bulkDeleteBtn" style="display:none;">
-            <i class="fad fa-trash-alt"></i> ลบรายการที่เลือก (<span id="selectedCount">0</span>)
-        </button>
-        <form method="POST" id="export_file_form" action="{{ route('admin.test_center.exportFile') }}">
-            @csrf
-            <button type="submit" class="btn btn-warning mr-2">
-                <i class="fad fa-download"></i> ดาวน์โหลดไฟล์ Excel
-            </button>
-        </form>
-    </div>
-</div> --}}
+
 <div class="row mb-2">
     <div class="col-lg-12">
         <div class="d-flex flex-wrap align-items-stretch gap-2">
 
-            <a class="btn btn-primary d-flex align-items-center mr-2" 
-               href="javascript:void(0)" id="createTestCenter">
+            <a class="btn btn-primary d-flex align-items-center mr-2" href="javascript:void(0)" id="createTestCenter">
                 <i class="fad fa-folder-plus mr-1"></i> เพิ่มศูนย์สอบ
             </a>
 
-            <a class="btn btn-success d-flex align-items-center mr-2"
-               href="{{ route('admin.test_center.create') }}">
+            <a class="btn btn-success d-flex align-items-center mr-2" href="{{ route('admin.test_center.create') }}">
                 <i class="fad fa-file-spreadsheet mr-1"></i> นำเข้าศูนย์สอบ Excel
             </a>
 
-            <form action="{{ route('admin.test_center.resetTestCenter') }}"
-                  method="POST">
+            <form action="{{ route('admin.test_center.resetTestCenter') }}" method="POST">
                 @csrf
-                <button type="submit"
-                        class="btn btn-dark d-flex align-items-center h-100 mr-2"
-                        onclick="return confirm('ยืนยันการรีเซ็ตศูนย์สอบทั้งหมด ?')">
+                <button type="submit" class="btn btn-dark d-flex align-items-center h-100 mr-2" onclick="return confirm('ยืนยันการรีเซ็ตศูนย์สอบทั้งหมด ?')">
                     <i class="fad fa-undo mr-1"></i> รีเซ็ตศูนย์สอบ
                 </button>
             </form>
 
-            <button class="btn btn-danger d-flex align-items-center mr-2"
-                    id="bulkDeleteBtn" style="display:none;">
+            <button class="btn btn-danger d-flex align-items-center mr-2" id="bulkDeleteBtn" style="display:none;">
                 <i class="fad fa-trash-alt mr-1"></i>
                 ลบรายการที่เลือก (<span id="selectedCount">0</span>)
             </button>
 
-            <form method="POST" action="{{ route('admin.test_center.exportFile') }}">
+            <form method="POST" id="export_file_form" action="{{ route('admin.test_center.exportFile') }}">
                 @csrf
-                <button type="submit"
-                        class="btn btn-info d-flex align-items-center h-100 mr-2">
+                <button type="submit" class="btn btn-info d-flex align-items-center h-100 mr-2">
                     <i class="fad fa-download mr-1"></i> ดาวน์โหลด Excel
                 </button>
             </form>
@@ -160,7 +132,7 @@
                                     {{-- <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fad fa-text"></i></span>
                                         </div> --}}
-                                    <input type="text" class="form-control" id="floor" name="floor" placeholder="" placeholder="" value="" title="" required>
+                                    <input type="number" class="form-control" id="floor" name="floor" placeholder="" placeholder="" value="" title="" required>
                                 </div>
                             </div>
                         </div>
@@ -184,7 +156,7 @@
                                     {{-- <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fad fa-text"></i></span>
                                         </div> --}}
-                                    <input type="text" class="form-control" id="capacity" name="capacity" placeholder="" placeholder="" value="" title="" required>
+                                    <input type="number" class="form-control" id="capacity" name="capacity" placeholder="" placeholder="" value="" title="" required>
                                 </div>
                             </div>
                         </div>
@@ -234,6 +206,7 @@
 @section('scripts')
 @parent
 <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/bootstrap-waitingfor.min.js') }}"></script>
 <script type="text/javascript">
     $(function() {
 
@@ -286,10 +259,30 @@
                 , {
                     data: 'air_condition'
                     , name: 'air_condition'
+                    , className: 'text-center'
+                    , render: function(data, type, row) {
+                        if (data === 'Y') {
+                            return '<span class="badge badge-success">ใช่</span>';
+                        } else if (data === 'N') {
+                            return '<span class="badge badge-danger">ไม่ใช่</span>';
+                        } else {
+                            return '';
+                        }
+                    }
                 }
                 , {
                     data: 'fan'
                     , name: 'fan'
+                    , className: 'text-center'
+                    , render: function(data, type, row) {
+                        if (data === 'Y') {
+                            return '<span class="badge badge-success">ใช่</span>';
+                        } else if (data === 'N') {
+                            return '<span class="badge badge-danger">ไม่ใช่</span>';
+                        } else {
+                            return '';
+                        }
+                    }
                 }
                 , {
                     data: 'action'
@@ -503,7 +496,73 @@
             });
         });
 
+        $("#export_file_form").on('submit', function(e) {
+            e.preventDefault();
+            let url = $(this).attr('action');
+            let token = $('input[name="_token"]', this).val();
+
+            waitingDialog.show('กำลังดาวน์โหลดไฟล์ Excel...', {
+                onShow: function() {}
+                , onHide: function() {}
+            });
+
+            $.ajax({
+                type: "POST"
+                , url: url
+                , data: {
+                    _token: token
+                }
+                , xhrFields: {
+                    responseType: 'blob' // สำคัญสำหรับไฟล์
+                }
+                , success: function(data, status, xhr) {
+                    // สร้าง URL สำหรับ blob
+                    let blob = new Blob([data], {
+                        type: xhr.getResponseHeader('Content-Type')
+                    });
+                    let link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+
+                    // ดึงชื่อไฟล์จาก response header หรือใช้ชื่อเริ่มต้น
+                    let contentDisposition = xhr.getResponseHeader('Content-Disposition');
+                    let filename = 'ศูนย์สอบ.xlsx';
+
+                    if (contentDisposition) {
+                        let filenameMatch = contentDisposition.match(
+                            /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                        if (filenameMatch && filenameMatch[1]) {
+                            filename = filenameMatch[1].replace(/['"]/g, '');
+                        }
+                    }
+
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(link.href);
+
+                    Swal.fire({
+                        title: "Success"
+                        , text: "ดาวน์โหลดไฟล์สำเร็จ"
+                        , icon: "success"
+                        , timer: 3000
+                    });
+                }
+                , error: function(xhr, status, error) {
+                    console.log(error);
+                    Swal.fire({
+                        title: "Error"
+                        , text: "เกิดข้อผิดพลาดในการดาวน์โหลดไฟล์"
+                        , icon: "error"
+                    });
+                }
+                , complete: function() {
+                    waitingDialog.hide();
+                }
+            });
+        });
     });
 
 </script>
 @endsection
+

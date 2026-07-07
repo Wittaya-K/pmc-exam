@@ -49,22 +49,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="col-sm-6 control-label">ห้องสอบ</label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fad fa-chevron-square-down"></i></span>
-                                </div>
-                                <select class="form-control select2" name="room" id="room">
-                                    <option value="">เลือก</option>
-                                    @foreach ($room as $row)
-                                        <option value="{{ $row->room }}">{{ $row->room }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div> --}}
                     <div class="col-md-2">
                         <div class="form-group">
                             <label class="col-sm-6 control-label">&nbsp;</label>

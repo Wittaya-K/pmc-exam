@@ -46,6 +46,10 @@ class TestCenterExportFile implements FromQuery, WithHeadings, WithChunkReading,
     {
         return 1000; // ปลอดภัยกับ WAMP
     }
+    public function batchSize(): int
+    {
+        return 1000;
+    }
     public function columnWidths(): array
     {
         return [

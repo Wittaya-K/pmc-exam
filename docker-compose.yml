@@ -1,9 +1,8 @@
-version: '3.8'
-
 services:
   app:
     build: .
     container_name: pmc-exam-app
+    restart: always
     volumes:
       - .:/var/www/html
     depends_on:
@@ -12,6 +11,7 @@ services:
   web:
     image: nginx:alpine
     container_name: pmc-exam-web
+    restart: always
     ports:
       - "8083:80"
     volumes:
@@ -30,7 +30,7 @@ services:
       MYSQL_USER: pmc-exam
       MYSQL_PASSWORD: uQPFVu(Oyfa3a[H5
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
 

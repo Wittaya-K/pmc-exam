@@ -210,7 +210,7 @@
             let url = $(this).attr('action');
             let token = $('input[name="_token"]', this).val();
 
-            waitingDialog.show('กำลังส่งออกไฟล์ Excel...', {
+            waitingDialog.show('กำลังดาวน์โหลดไฟล์ Excel...', {
                 onShow: function() {},
                 onHide: function() {}
             });
@@ -252,7 +252,7 @@
 
                     Swal.fire({
                         title: "Success",
-                        text: "ส่งออกไฟล์สำเร็จ",
+                        text: "ดาวน์โหลดไฟล์สำเร็จ",
                         icon: "success",
                         timer: 3000
                     });
@@ -261,7 +261,7 @@
                     console.log(error);
                     Swal.fire({
                         title: "Error",
-                        text: "เกิดข้อผิดพลาดในการส่งออกไฟล์",
+                        text: "เกิดข้อผิดพลาดในการดาวน์โหลดไฟล์",
                         icon: "error"
                     });
                 },

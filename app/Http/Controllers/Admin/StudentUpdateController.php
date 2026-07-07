@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SeatAssign;
 use App\Models\ParticipantImport;
 use App\Exports\StudentRecheckExportFile;
-use App\Exports\ParticipantExportFile;
+use App\Exports\StudentUpdateExportFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
@@ -18,11 +18,12 @@ class StudentUpdateController extends Controller
     public function index(Request $request)
     {
         abort_unless(Gate::allows('file_import_access'), 403);
-
-        $testCenter = ParticipantImport::select('test_center')->groupBy('test_center')->get();
+        
+        $testCenter = ParticipantImport::select('test_center')->orderBy('test_center')->groupBy('test_center')->get();
         $fNamelname = ParticipantImport::select('first_name_th', 'last_name_th')->orderBy('id', 'asc')->get();
+        $classLevel = ParticipantImport::select('classLevel')->orderBy('classLevel')->groupBy('classLevel')->get();
 
-        return view('admin.student_update.index', compact('testCenter', 'fNamelname'));
+        return view('admin.student_update.index', compact('testCenter', 'fNamelname','classLevel'));
     }
 
     public function create(){
@@ -192,7 +193,7 @@ class StudentUpdateController extends Controller
     }
     public function exportFile()
 	{
-		$filename = "เช็คชื่อผู้เข้าสอบ - ".now()->format('d-m-Y_H-i-s') . '.xlsx';
-		return Excel::download(new ParticipantExportFile, $filename);
+		$filename = now()->format('d-m-Y_H-i-s') . '.xlsx';
+		return Excel::download(new StudentUpdateExportFile, $filename);
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\SeatAssign;
+use App\Models\ParticipantImport;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
@@ -10,26 +10,31 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
-class ParticipantExportFile implements FromQuery, WithHeadings, WithChunkReading,WithColumnWidths,WithStyles
+class StudentUpdateExportFile implements FromQuery, WithHeadings, WithChunkReading,WithColumnWidths,WithStyles
 {
 
     public function query()
     {
-        return SeatAssign::select(
+        return ParticipantImport::select(
             'id',
+            'title_th',
             'first_name_th',
             'last_name_th',
-            'school',
-            'program_name',
-            'test_center',
+            'title_en',
+            'first_name_en',
+            'last_name_en',
+            'email',
+            'phone',
             'classLevel',
             'level',
-            'build_floor_room',
-            'building',
-            'floor',
-            'room',
-            'session',
-            'seat_no'
+            'program_name',
+            'test_center',
+            'school',
+            'school_sub_district',
+            'school_district',
+            'school_province',
+            'payment_status',
+            'payment_status_code',
         )
         ->orderBy('test_center', 'asc')
         ->orderBy('program_name', 'asc')
@@ -41,19 +46,24 @@ class ParticipantExportFile implements FromQuery, WithHeadings, WithChunkReading
         // Define headers for the exported file
         return [
             'id',
+            'title_th',
             'first_name_th',
             'last_name_th',
-            'school',
-            'program_name',
-            'test_center',
+            'title_en',
+            'first_name_en',
+            'last_name_en',
+            'email',
+            'phone',
             'classLevel',
             'level',
-            'build_floor_room',
-            'building',
-            'floor',
-            'room',
-            'session',
-            'seat_no'
+            'program_name',
+            'test_center',
+            'school',
+            'school_sub_district',
+            'school_district',
+            'school_province',
+            'payment_status',
+            'payment_status_code',
         ];
     }
     public function chunkSize(): int
@@ -68,19 +78,24 @@ class ParticipantExportFile implements FromQuery, WithHeadings, WithChunkReading
     {
         return [
             'A' => 15,  // id
-            'B' => 15,  // first_name_th
-            'C' => 15,  // last_name_th
-            'D' => 35,  // school
-            'E' => 25,  // program_name
-            'F' => 35,  // test_center
-            'G' => 25,  // classLevel
-            'H' => 10,  // level
-            'I' => 25,  // build_floor_room
-            'J' => 10,  // build
-            'K' => 10,  // floor
-            'L' => 10,  // room
-            'M' => 10,  // session
-            'N' => 10,  // seat_no
+            'B' => 15,  // title_th
+            'C' => 15,  // first_name_th
+            'D' => 35,  // last_name_th
+            'E' => 25,  // title_en
+            'F' => 35,  // first_name_en
+            'G' => 25,  // last_name_en
+            'H' => 10,  // email
+            'I' => 25,  // phone
+            'J' => 10,  // classLevel
+            'K' => 10,  // level
+            'L' => 10,  // program_name
+            'M' => 10,  // test_center
+            'N' => 10,  // school
+            'O' => 15,  // school_sub_district
+            'P' => 15,  // school_district
+            'Q' => 15,  // school_province
+            'R' => 15,  // payment_status
+            'S' => 15,  // payment_status_code
         ];
     }
     public function styles(Worksheet $sheet)

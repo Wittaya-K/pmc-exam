@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Jobs\StudentImportJob;
 
 class FileImportController extends Controller
 {
@@ -33,8 +34,7 @@ class FileImportController extends Controller
 		return response()->json(['status' => true, 'data' => $ParticipantImport ]);
 	}
 
-	public function save(Request $request,$id = "")
-	{
+	public function save(Request $request,$id = ""){
 		$validator = Validator::make($request->all(), [
             'fileUpload' => 'required|array',
             'fileUpload.*' => 'file|max:102400',
@@ -76,7 +76,6 @@ class FileImportController extends Controller
             'success' => true,
             'message' => 'success'
         ]);
-		
 		// return back();
 	}
 

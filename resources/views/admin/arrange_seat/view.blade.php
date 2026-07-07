@@ -65,17 +65,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="col-sm-6 control-label">&nbsp;</label>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                </div>
-                                <button type="button" class="btn btn-primary" id="btnSearch" value="btnSearch"><i
-                                        class="fad fa-search"></i> ค้นหา</button>
-                            </div>
-                        </div>
-                    </div> --}}
                 </div>
             </form>
         </div>

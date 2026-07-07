@@ -110,9 +110,9 @@
         </footer>
         {{-- <aside class="control-sidebar control-sidebar-dark">
         </aside> --}}
-        <form id="logoutform" action="{{ route('logout') }}" method="POST" style="display: none;">
+        {{-- <form id="logoutform" action="{{ route('logout') }}" method="POST" style="display: none;">
             {{ csrf_field() }}
-        </form>
+        </form> --}}
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>

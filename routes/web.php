@@ -176,7 +176,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
             Route::get('', 'index')->name('index');
             Route::get('view', 'view')->name('view');
             Route::post('pdfPrint', 'pdfPrint')->name('pdfPrint');
-            // Route::post('pdfFile', 'pdfFile')->name('pdfFile');
+            Route::get('pdfFile', 'pdfFile')->name('pdfFile');
         });
     });
 });

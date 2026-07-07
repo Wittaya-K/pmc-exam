@@ -65,23 +65,6 @@
 </div>
 
 @can('student_recheck_create')
-{{-- <div class="row mb-2">
-            <div class="col-lg-12">
-                <a class="btn btn-primary mr-2" href="javascript:void(0)" id="createStudent">
-                    <i class="fas fa-plus"></i> เพิ่มผู้เข้าสอบ
-                </a>
-                <a class="btn btn-success mr-2" href="javascript:void(0)" id="bulkCheckAttendance">
-                    <i class="fas fa-check-double"></i> เช็คชื่อหลายคน
-                </a>
-
-                <form method="POST" action="{{ route('admin.student_recheck.exportFile') }}">
-@csrf
-<button type="submit" class="btn btn-info d-flex align-items-center h-100 mr-2">
-    <i class="fad fa-download mr-1"></i> ดาวน์โหลด Excel
-</button>
-</form>
-</div>
-</div> --}}
 
 <div class="row mb-2">
     <div class="col-lg-12">
@@ -94,7 +77,7 @@
                 <i class="fas fa-check-double"></i> เช็คชื่อหลายคน
             </a>
 
-            <form method="POST" action="{{ route('admin.student_recheck.exportFile') }}">
+            <form method="POST" id="export_file_form" action="{{ route('admin.student_recheck.exportFile') }}">
                 @csrf
                 <button type="submit" class="btn btn-info d-flex align-items-center h-100 mr-2">
                     <i class="fad fa-download mr-1"></i> ดาวน์โหลด Excel
@@ -225,7 +208,13 @@
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label>ระดับการสอบ</label>
-                                <input type="text" class="form-control" id="program_name" name="program_name" required>
+                                {{-- <input type="text" class="form-control" id="program_name" name="program_name" required> --}}
+                                <select name="program_name" id="program_name" class="form-control">
+                                    <option value="">เลือก</option>
+                                    <option value="ประถมปลาย (ป.4 - ป.6)">ประถมปลาย (ป.4 - ป.6)</option>
+                                    <option value="มัธยมต้น (ม.1 - ม.3)">มัธยมต้น (ม.1 - ม.3)</option>
+                                    <option value="มัธยมปลาย (ม.4 - ม.6)">มัธยมปลาย (ม.4 - ม.6)</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -234,13 +223,25 @@
                         <div class="col-lg-4">
                             <div class="form-group">
                                 <label>ศูนย์สอบ</label>
-                                <input type="text" class="form-control" id="test_center_input" name="test_center" required>
+                                {{-- <input type="text" class="form-control" id="test_center_input" name="test_center" required> --}}
+                                <select id="test_center_input" name="test_center" required class="form-control">
+                                    <option value="">เลือก</option>
+                                    @foreach ($testCenter as $item)
+                                        <option value="{{ $item->test_center }}">{{ $item->test_center }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group">
                                 <label>ชั้นการศึกษา</label>
-                                <input type="text" class="form-control" id="classLevel" name="classLevel" required>
+                                {{-- <input type="text" class="form-control" id="classLevel" name="classLevel" required> --}}
+                                <select id="classLevel" name="classLevel" required class="form-control">
+                                    <option value="">เลือก</option>
+                                    @foreach ($classLevel as $item)
+                                        <option value="{{ $item->classLevel }}">{{ $item->classLevel }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="col-lg-4">
@@ -342,6 +343,7 @@
 @section('scripts')
 @parent
 <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/bootstrap-waitingfor.min.js') }}"></script>
 <script type="text/javascript">
     $(function() {
         $.ajaxSetup({
@@ -814,8 +816,73 @@
                 }
             });
         });
-    });
 
+        $("#export_file_form").on('submit', function(e) {
+            e.preventDefault();
+            let url = $(this).attr('action');
+            let token = $('input[name="_token"]', this).val();
+
+            waitingDialog.show('กำลังดาวน์โหลดไฟล์ Excel...', {
+                onShow: function() {},
+                onHide: function() {}
+            });
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    _token: token
+                },
+                xhrFields: {
+                    responseType: 'blob' // สำคัญสำหรับไฟล์
+                },
+                success: function(data, status, xhr) {
+                    // สร้าง URL สำหรับ blob
+                    let blob = new Blob([data], {
+                        type: xhr.getResponseHeader('Content-Type')
+                    });
+                    let link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+
+                    // ดึงชื่อไฟล์จาก response header หรือใช้ชื่อเริ่มต้น
+                    let contentDisposition = xhr.getResponseHeader('Content-Disposition');
+                    let filename = 'ข้อมูลผู้เข้าสอบ.xlsx';
+
+                    if (contentDisposition) {
+                        let filenameMatch = contentDisposition.match(
+                            /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                        if (filenameMatch && filenameMatch[1]) {
+                            filename = filenameMatch[1].replace(/['"]/g, '');
+                        }
+                    }
+
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(link.href);
+
+                    Swal.fire({
+                        title: "Success",
+                        text: "ดาวน์โหลดไฟล์สำเร็จ",
+                        icon: "success",
+                        timer: 3000
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                    Swal.fire({
+                        title: "Error",
+                        text: "เกิดข้อผิดพลาดในการดาวน์โหลดไฟล์",
+                        icon: "error"
+                    });
+                },
+                complete: function() {
+                    waitingDialog.hide();
+                }
+            });
+        });
+    });
 </script>
 @endsection
 
