@@ -136,9 +136,19 @@ class ReportController extends Controller
 					$pdf::Cell(32, 7, $row->first_name_th, 1);
 					$pdf::Cell(32, 7, $row->last_name_th, 1);
 					$pdf::Cell(40, 7, $row->program_name, 1, 0, 'C');
-                    $pdf::SetTextColor(200, 41, 9); // Set color to red
-					$pdf::Cell(18, 7, $row->session, 1, 0, 'C');
+
+                    if($row->session == "A"){
+                        $pdf::SetTextColor(255, 0, 0); // Set color to red
+                        $pdf::Cell(18, 7, $row->session, 1, 0, 'C');
+                    } elseif($row->session == "B") {
+                        $pdf::SetTextColor(0, 0, 255); // Set color to green
+                        $pdf::Cell(18, 7, $row->session, 1, 0, 'C');
+                    }
+
+                    // $pdf::SetTextColor(200, 41, 9); // Set color to red
+					// $pdf::Cell(18, 7, $row->session, 1, 0, 'C');
                     $pdf::SetTextColor(0, 0, 0); // Reset color to black
+
 					$pdf::Cell(18, 7, $row->seat_no, 1, 0, 'C');
 					$pdf::Cell(22, 7, "", 1, 1);
 				}
@@ -148,8 +158,8 @@ class ReportController extends Controller
 			if (Storage::disk('public')->exists('reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf')) { //เช็กก่อนว่ามีไฟล์
 				Storage::disk('public')->delete('reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf');
 			}
-			// $pdf::Output('ใบเซ็นชื่อผู้เข้าสอบ.pdf', 'I');
-			$pdf::Output(storage_path('app/public/reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf'), 'F');
+			$pdf::Output('ใบเซ็นชื่อผู้เข้าสอบ.pdf', 'I');
+			// $pdf::Output(storage_path('app/public/reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf'), 'F');
 
 			return redirect()->route('admin.reports.pdfFile');
 		} else {

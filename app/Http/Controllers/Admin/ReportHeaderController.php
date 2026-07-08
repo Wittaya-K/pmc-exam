@@ -55,7 +55,7 @@ class ReportHeaderController extends Controller
     public function store(Request $request)
     {
         abort_unless(Gate::allows('report_header_create'), 403);
-        // dd($request->all());
+
         ReportHeader::updateOrCreate(
             [
                 'id' => $request->id
