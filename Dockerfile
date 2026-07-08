@@ -32,12 +32,20 @@ COPY php-fpm.conf /usr/local/etc/php-fpm.d/zz-custom.conf
 
 # สร้าง directory ที่จำเป็นถ้ายังไม่มี
 # หมายเหตุ: chown/chmod ตอน build time ไม่มีผล เพราะ docker-compose mount
-# volume (.:/var/www/html) ทับทุกครั้งที่ start - permission จริงจัดการใน
-# docker-entrypoint.sh แทน
-RUN mkdir -p storage/framework/{sessions,views,cache} \
+# named volume (storage_data / public_data) ทับทุกครั้งที่ start - permission
+# จริงจัดการใน docker-entrypoint.sh แทน
+# (แก้บั๊ก: /bin/sh ของ RUN ไม่รองรับ brace expansion {a,b,c} ต้องแยกบรรทัด)
+RUN mkdir -p storage/framework/sessions \
+    && mkdir -p storage/framework/views \
+    && mkdir -p storage/framework/cache \
     && mkdir -p storage/logs \
     && mkdir -p bootstrap/cache \
     && mkdir -p public/uploads/temp
+
+# สำรอง public/ ที่ build เสร็จแล้ว (index.php, assets ที่มีตอน build)
+# ไว้ให้ docker-entrypoint.sh คืนค่ากลับเข้า public_data volume ตอน
+# container start ครั้งแรก (volume ว่างเปล่าไม่มีไฟล์พวกนี้)
+RUN cp -r public /opt/laravel-public-backup
 
 # Clear และ cache Laravel (ถ้ามี .env ในขั้นตอน build)
 # หมายเหตุ: key:generate ควรทำตอน runtime ไม่ใช่ build time
@@ -51,6 +59,9 @@ RUN php artisan config:clear \
 # RUN php artisan config:cache \
 #     && php artisan route:cache \
 #     && php artisan view:cache
+
+RUN echo "max_input_time = 300" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "max_execution_time = 300" >> /usr/local/etc/php/conf.d/custom.ini
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/

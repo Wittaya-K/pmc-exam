@@ -12,7 +12,6 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent nav-flat" data-widget="treeview" role="menu" data-accordion="false">
                 {{-- <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false"> --}}
-                @can('home_access')
                 <li class="nav-item">
                     <a href="{{ route('admin.home') }}" class="nav-link">
                         <p>
@@ -21,9 +20,8 @@
                         </p>
                     </a>
                 </li>
-                @endcan
                 @can('user_management_access')
-                <li class="nav-item has-treeview {{ request()->is('admin/test_center*') ? 'menu-open' : '' }}">
+                <li class="nav-item has-treeview {{ request()->is('admin/test_center*') ? 'menu-open' : '' }} {{ request()->is('admin/report_header*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
                         <i class="fad fa-folder"></i>
                         <p>
@@ -37,6 +35,14 @@
                                 <i class="fad fa-chevron-circle-right"></i>
                                 <p>
                                     <span>ศูนย์สอบ</span>
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.report_header.index') }}" class="nav-link {{ request()->is('admin/report_header') || request()->is('admin/report_header/*') ? 'active' : '' }}">
+                                <i class="fad fa-chevron-circle-right"></i>
+                                <p>
+                                    <span>หัวรายงาน</span>
                                 </p>
                             </a>
                         </li>
@@ -115,7 +121,7 @@
                 </li> --}}
                 @endcan
                 @can('report_access')
-                {{-- <li class="nav-item has-treeview {{ request()->is('admin/reports*') ? 'menu-open' : '' }}">
+                <li class="nav-item has-treeview {{ request()->is('admin/reports*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
                         <i class="fad fa-folder"></i>
                         <p>
@@ -133,7 +139,7 @@
                             </a>
                         </li>
                     </ul>
-                </li> --}}
+                </li>
                 @endcan
                 @can('user_management_access')
                 <li class="nav-item has-treeview {{ request()->is('admin/permissions*') ? 'menu-open' : '' }} {{ request()->is('admin/roles*') ? 'menu-open' : '' }} {{ request()->is('admin/users*') ? 'menu-open' : '' }}">

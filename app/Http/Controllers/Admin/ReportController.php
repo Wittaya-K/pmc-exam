@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use TCPDF_FONTS;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ParticipantImport;
+use App\Models\TestCenter;
+use App\Models\ReportHeader;
+use Exception;
 
 class ReportController extends Controller
 {
@@ -22,10 +26,27 @@ class ReportController extends Controller
 
 	public function pdfPrint(Request $request)
 	{
+        $psuCenter = ParticipantImport::distinct()->where('test_center', 'like', '%คณะวิทยาศาสตร์%ม.อ%')
+            ->value('test_center');
+
+        if (!$psuCenter) {
+            throw new Exception("ไม่พบข้อมูลศูนย์สอบคณะวิทยาศาสตร์ ม.อ.");
+        }
+
+        // หาชื่อจริงจาก TestCenter แยกต่างหาก
+        $psuCenterInTestCenter = TestCenter::where('test_center', 'like', '%คณะวิทยาศาสตร์%ม.อ%')
+            ->value('test_center');
+
+        if (!$psuCenterInTestCenter) {
+            throw new Exception("ไม่พบข้อมูลห้องสอบคณะวิทยาศาสตร์ ม.อ. ใน TestCenter");
+        }
+
+        $reportHeader = ReportHeader::first();  //ตั้งค่าหัวรายงานจากตาราง report_header
 		$testCenter = $request->input('test_center'); // ศูนย์สอบ
 		// $room = $request->input('room');				// ห้องสอบ
+
 		// รายงานใบเซ็นชื่อคณะวิทยาศาสตร์
-		if ($testCenter == 'คณะวิทยาศาสตร์ม.อ.วิทยาเขตหาดใหญ่') {
+		if ($testCenter == $psuCenterInTestCenter) {
 			$app = App::getFacadeRoot();
 			$pdf = new TCPDF($app);
 
@@ -76,10 +97,14 @@ class ReportController extends Controller
 				$buildFloorRoom = $seatAssign->first()->build_floor_room;
 				$session        = $center->session; // เก็บค่า session
 				// ===== Header =====
-				$pdf::Cell(0, 7, "โครงการสอบแข่งขันคณิตศาสตร์มหาวิทยาลัยสงขลานครินทร์ ประจำปี 2569", 0, 1, 'C');
-				$pdf::SetFont($fontname, '', 14);
-				$pdf::Cell(0, 6, "PSU Mathematics Competition 2026 (PMC 2026)", 0, 1, 'C');
-				$pdf::Cell(0, 6, "วันจันทร์ที่ 19 มกราคม 2569", 0, 1, 'C');
+				// $pdf::Cell(0, 7, "โครงการสอบแข่งขันคณิตศาสตร์มหาวิทยาลัยสงขลานครินทร์ ประจำปี 2569", 0, 1, 'C');
+				// $pdf::SetFont($fontname, '', 14);
+				// $pdf::Cell(0, 6, "PSU Mathematics Competition 2026 (PMC 2026)", 0, 1, 'C');
+				// $pdf::Cell(0, 6, "วันจันทร์ที่ 19 มกราคม 2569", 0, 1, 'C');
+                $pdf::Cell(0, 7, $reportHeader->project_name_th, 0, 1, 'C');
+                $pdf::SetFont($fontname, '', 14);
+                $pdf::Cell(0, 6, $reportHeader->project_name_en, 0, 1, 'C');
+                $pdf::Cell(0, 6, "วันจันทร์ที่ {$reportHeader->exam_date_open}", 0, 1, 'C'); // แสดงสถานที่พร้อม session
 				$pdf::Cell(0, 6, "สนามสอบ {$center->test_center}", 0, 1, 'C');
 
 				// แสดงสถานที่พร้อม session
@@ -107,11 +132,23 @@ class ReportController extends Controller
 
 				// ===== Data =====
 				foreach ($seatAssign as $row) {
-					$pdf::Cell(28, 7, $row->id, 1);
+					$pdf::Cell(28, 7, $row->id, 1, 0, 'C');
 					$pdf::Cell(32, 7, $row->first_name_th, 1);
 					$pdf::Cell(32, 7, $row->last_name_th, 1);
-					$pdf::Cell(40, 7, $row->program_name, 1);
-					$pdf::Cell(18, 7, $row->session, 1, 0, 'C');
+					$pdf::Cell(40, 7, $row->program_name, 1, 0, 'C');
+
+                    if($row->session == "A"){
+                        $pdf::SetTextColor(255, 0, 0); // Set color to red
+                        $pdf::Cell(18, 7, $row->session, 1, 0, 'C');
+                    } elseif($row->session == "B") {
+                        $pdf::SetTextColor(0, 0, 255); // Set color to green
+                        $pdf::Cell(18, 7, $row->session, 1, 0, 'C');
+                    }
+
+                    // $pdf::SetTextColor(200, 41, 9); // Set color to red
+					// $pdf::Cell(18, 7, $row->session, 1, 0, 'C');
+                    $pdf::SetTextColor(0, 0, 0); // Reset color to black
+
 					$pdf::Cell(18, 7, $row->seat_no, 1, 0, 'C');
 					$pdf::Cell(22, 7, "", 1, 1);
 				}
@@ -121,8 +158,8 @@ class ReportController extends Controller
 			if (Storage::disk('public')->exists('reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf')) { //เช็กก่อนว่ามีไฟล์
 				Storage::disk('public')->delete('reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf');
 			}
-			// $pdf::Output('ใบเซ็นชื่อผู้เข้าสอบ.pdf', 'I');
-			$pdf::Output(storage_path('app/public/reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf'), 'F');
+			$pdf::Output('ใบเซ็นชื่อผู้เข้าสอบ.pdf', 'I');
+			// $pdf::Output(storage_path('app/public/reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf'), 'F');
 
 			return redirect()->route('admin.reports.pdfFile');
 		} else {
@@ -178,9 +215,13 @@ class ReportController extends Controller
 				$session        = $center->session; // เก็บค่า session
 
 				// ===== Header =====
-				$pdf::Cell(0, 5, "โครงการสอบแข่งขันคณิตศาสตร์มหาวิทยลัยสงขลานครินทร์ ประจำปี 2569", 0, 1, 'C');
-				$pdf::Cell(0, 5, "PSU Mathematics Competition 2026 (PMC 2026)", 0, 1, 'C');
-				$pdf::Cell(0, 5, "วันจันทร์ที่ 19 มกราคม 2569", 0, 1, 'C');
+				// $pdf::Cell(0, 5, "โครงการสอบแข่งขันคณิตศาสตร์มหาวิทยลัยสงขลานครินทร์ ประจำปี 2569", 0, 1, 'C');
+				// $pdf::Cell(0, 5, "PSU Mathematics Competition 2026 (PMC 2026)", 0, 1, 'C');
+				// $pdf::Cell(0, 5, "วันจันทร์ที่ 19 มกราคม 2569", 0, 1, 'C');
+                $pdf::Cell(0, 7, $reportHeader->project_name_th, 0, 1, 'C');
+                $pdf::SetFont($fontname, '', 14);
+                $pdf::Cell(0, 6, $reportHeader->project_name_en, 0, 1, 'C');
+                $pdf::Cell(0, 6, "วันจันทร์ที่ {$reportHeader->exam_date_open}", 0, 1, 'C'); // แสดงสถานที่พร้อม session
 				$pdf::Cell(0, 5, "สนามสอบ {$center->test_center}", 0, 1, 'C');
 				$pdf::SetTextColor(0, 0, 255); // สีน้ำเงิน
 				$pdf::Cell(0, 5, "สถานที่สอบ {$buildFloorRoom}", 0, 1, 'C');
@@ -197,10 +238,10 @@ class ReportController extends Controller
 
 				// ===== Data =====
 				foreach ($seatAssign as $row) {
-					$pdf::Cell(28, 5, $row->id, 1);
+					$pdf::Cell(28, 5, $row->id, 1, 0, 'C');
 					$pdf::Cell(32, 5, $row->first_name_th, 1);
 					$pdf::Cell(32, 5, $row->last_name_th, 1);
-					$pdf::Cell(40, 5, $row->program_name, 1);
+					$pdf::Cell(40, 5, $row->program_name, 1, 0, 'C');
 					$pdf::Cell(18, 5, $row->seat_no, 1, 0, 'C');
 					$pdf::Cell(40, 5, "", 1, 1);
 				}
@@ -217,7 +258,7 @@ class ReportController extends Controller
 		}
 	}
 	public function pdfFile()
-	{	
+	{
 		return response()->file(storage_path('app/public/reports/ใบเซ็นชื่อผู้เข้าสอบ.pdf'), ['content-type' => 'application/pdf','Content-Disposition' => 'inline; filename="ใบเซ็นชื่อผู้เข้าสอบ.pdf"']);
 	}
 }
