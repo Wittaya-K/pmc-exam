@@ -71,7 +71,7 @@
                         <th width="30">
                             <input type="checkbox" id="selectAll">
                         </th>
-                        <th>#</th>
+                        {{-- <th>#</th> --}}
                         <th>ศูนย์สอบ</th>
                         <th>อาคาร/ตึก</th>
                         <th>ชั้น</th>
@@ -229,10 +229,10 @@
                         return '<input type="checkbox" class="row-checkbox" value="' + data + '">';
                     }
                 }
-                , {
-                    data: 'id'
-                    , name: 'id'
-                }
+                // , {
+                //     data: 'id'
+                //     , name: 'id'
+                // }
                 , {
                     data: 'test_center'
                     , name: 'test_center'
@@ -269,6 +269,7 @@
                             return '';
                         }
                     }
+                    , width:"70px"
                 }
                 , {
                     data: 'fan'
@@ -283,6 +284,7 @@
                             return '';
                         }
                     }
+                    , width:"70px"
                 }
                 , {
                     data: 'action'
@@ -291,6 +293,7 @@
                     , searchable: false
                 }
             , ]
+            , "ordering": false
         });
 
         // Select All Checkbox

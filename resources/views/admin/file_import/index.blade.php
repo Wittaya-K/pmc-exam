@@ -43,8 +43,16 @@
         </div>
 
         <div class="card-body">
-            <div class="table-responsive">
+            {{-- <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="tbl_schedule" style="width: 100%;">
+                </table>
+            </div> --}}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover" id="tbl_schedule">
+                    <thead>
+                    </thead>
+                    <tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -83,109 +91,109 @@
                 columns: [{
                         className: '',
                         data: 'id',
-                        title: '<i class="fad fa-poll-people"></i> รหัสประจำตัวสอบ',
+                        title: 'รหัสประจำตัวสอบ',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'title_th',
-                        title: '<i class="fad fa-poll-people"></i> คำนำหน้าชื่อไทย',
+                        title: 'คำนำหน้าชื่อไทย',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'first_name_th',
-                        title: '<i class="fad fa-poll-people"></i> ชื่อไทย',
+                        title: 'ชื่อไทย',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'last_name_th',
-                        title: '<i class="fad fa-poll-people"></i> สกุลไทย',
+                        title: 'สกุลไทย',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'school',
-                        title: '<i class="fad fa-poll-people"></i> โรงเรียน',
+                        title: 'โรงเรียน',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'program_name',
-                        title: '<i class="fad fa-poll-people"></i> ระดับการสอบ',
+                        title: 'ระดับการสอบ',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'test_center',
-                        title: '<i class="fad fa-poll-people"></i> ศูนย์สอบ',
+                        title: 'ศูนย์สอบ',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'payment_status',
-                        title: '<i class="fad fa-poll-people"></i> สถานะการชำระเงิน',
+                        title: 'สถานะการชำระเงิน',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'title_en',
-                        title: '<i class="fad fa-poll-people"></i> คำนำหน้าชื่ออังกฤษ',
+                        title: 'คำนำหน้าชื่ออังกฤษ',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'first_name_en',
-                        title: '<i class="fad fa-poll-people"></i> ชื่ออังกฤษ',
+                        title: 'ชื่ออังกฤษ',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'last_name_en',
-                        title: '<i class="fad fa-poll-people"></i> สกุลอังกฤษ',
+                        title: 'สกุลอังกฤษ',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'email',
-                        title: '<i class="fad fa-poll-people"></i> เมล์',
+                        title: 'เมล์',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'phone',
-                        title: '<i class="fad fa-poll-people"></i> โทร',
+                        title: 'โทร',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'classLevel',
-                        title: '<i class="fad fa-poll-people"></i> ชั้นการศึกษา',
+                        title: 'ชั้นการศึกษา',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'level',
-                        title: '<i class="fad fa-poll-people"></i> ระดับชั้น',
+                        title: 'ระดับชั้น',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'school_sub_district',
-                        title: '<i class="fad fa-poll-people"></i> ตำบล',
+                        title: 'ตำบล',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'school_district',
-                        title: '<i class="fad fa-poll-people"></i> อำเภอ',
+                        title: 'อำเภอ',
                         orderable: false,
                     },
                     {
                         className: '',
                         data: 'school_province',
-                        title: '<i class="fad fa-poll-people"></i> จังหวัด',
+                        title: 'จังหวัด',
                         orderable: false,
                     },
                 ],
@@ -193,6 +201,7 @@
                     width: "300px",
                     targets: "_all"
                 }]
+                , "ordering": false
             });
         }
     </script>

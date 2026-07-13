@@ -18,9 +18,8 @@ class ArrangeSeatController extends Controller
     public function index()
     {
         $countStudent    = ParticipantImport::select('id')->count(); //จำนวนนักเรียนทั้งหมด
-        $selectRoom      = SeatAssign::select('room')->groupBy('room')->get();
-        $countRoom       = count($selectRoom);                     //จำนวนห้องที่จัดสอบแล้ว
-        $countSeatAssign = SeatAssign::select('seat_no')->count(); //จำนวนที่นั่งจัดสอบแล้ว
+        $countRoom      = TestCenter::select('room')->count();       //จำนวนห้องที่จัดสอบแล้ว
+        $countSeatAssign = SeatAssign::select('seat_no')->count();   //จำนวนที่นั่งจัดสอบแล้ว
 
         $selectTestcenter = SeatAssign::select('test_center')
             ->selectRaw('COUNT(*) as total')
@@ -156,6 +155,12 @@ class ArrangeSeatController extends Controller
             ->get()
             ->groupBy('test_center');
 
+        // dd([
+        //     'psuCenterInTestCenter' => $psuCenterInTestCenter,
+        //     'generalCenters' => $generalCenters,
+        //     'กัลยาณี_rooms' => $examRoomsGeneral['โรงเรียนกัลยาณีศรีธรรมราช'] ?? 'NOT FOUND',
+        // ]);
+
         $studentsGeneral = ParticipantImport::select(
             'id', 'title_th', 'first_name_th', 'last_name_th',
             'classLevel', 'level', 'school', 'program_name', 'test_center'
@@ -169,36 +174,108 @@ class ArrangeSeatController extends Controller
 
         $result = [];
 
+        // foreach ($studentsGeneral as $center => $studentList) {
+
+        //     if (! isset($examRoomsGeneral[$center])) {
+        //         throw new Exception("ไม่มีข้อมูลห้องสอบของศูนย์สอบ {$center}");
+        //     }
+
+        //     $rooms       = $examRoomsGeneral[$center]->values();
+        //     $roomPointer = 0;
+
+        //     $totalStudents = $studentList->count();
+        //     $capacity      = $rooms[$roomPointer]->capacity;
+        //     $roomsNeeded   = ceil($totalStudents / $capacity);
+
+        //     if ($roomsNeeded > $rooms->count()) {
+        //         throw new Exception("ห้องสอบไม่เพียงพอ: {$center}, จำนวนนักเรียน: {$totalStudents}, ความจุ: {$capacity}, จำนวนห้องที่ต้องการ: {$roomsNeeded}");
+        //     }
+
+        //     $baseSeatsPerRoom = floor($totalStudents / $roomsNeeded);
+        //     $extraSeats       = $totalStudents % $roomsNeeded;
+        //     $studentIndex     = 0;
+
+        //     for ($i = 0; $i < $roomsNeeded; $i++) {
+        //         if ($studentIndex >= $totalStudents) {
+        //             break;
+        //         }
+
+        //         $room          = $rooms[$roomPointer];
+        //         $seatsThisRoom = $baseSeatsPerRoom + ($i < $extraSeats ? 1 : 0);
+
+        //         for ($seat = 1; $seat <= $seatsThisRoom && $studentIndex < $totalStudents; $seat++) {
+        //             $student  = $studentList[$studentIndex];
+        //             $result[] = [
+        //                 'participant_id'   => $student->id,
+        //                 'test_center'      => $center,
+        //                 'program_name'     => $student->program_name,
+        //                 'school'           => $student->school,
+        //                 'classLevel'       => $student->classLevel,
+        //                 'level'            => $student->level,
+        //                 'building'         => $room->building,
+        //                 'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room}",
+        //                 'floor'         => $room->floor,
+        //                 'room'          => $room->room,
+        //                 'session'       => $room->session,
+        //                 'seat_no'       => $seat,
+        //                 'first_name_th' => $student->first_name_th,
+        //                 'last_name_th'  => $student->last_name_th,
+        //                 'name_th'       => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
+        //             ];
+        //             $studentIndex++;
+        //         }
+        //         $roomPointer++;
+        //     }
+        // }
+
+        // // บันทึกศูนย์ทั่วไป
+        // foreach ($result as $row) {
+        //     SeatAssign::updateOrCreate(
+        //         ['id' => $row['participant_id']],
+        //         [
+        //             'first_name_th'    => $row['first_name_th'],
+        //             'last_name_th'     => $row['last_name_th'],
+        //             'school'           => $row['school'],
+        //             'program_name'     => $row['program_name'],
+        //             'test_center'      => $row['test_center'],
+        //             'classLevel'       => $row['classLevel'],
+        //             'level'            => $row['level'],
+        //             'build_floor_room' => $row['build_floor_room'],
+        //             'building'         => $row['building'],
+        //             'floor'            => $row['floor'],
+        //             'room'             => $row['room'],
+        //             'session'          => $row['session'],
+        //             'seat_no'          => $row['seat_no'],
+        //         ]
+        //     );
+        // }
+
         foreach ($studentsGeneral as $center => $studentList) {
 
             if (! isset($examRoomsGeneral[$center])) {
                 throw new Exception("ไม่มีข้อมูลห้องสอบของศูนย์สอบ {$center}");
             }
 
-            $rooms       = $examRoomsGeneral[$center]->values();
-            $roomPointer = 0;
-
+            $rooms         = $examRoomsGeneral[$center]->values();
             $totalStudents = $studentList->count();
-            $capacity      = $rooms[$roomPointer]->capacity;
-            $roomsNeeded   = ceil($totalStudents / $capacity);
 
-            if ($roomsNeeded > $rooms->count()) {
-                throw new Exception("ห้องสอบไม่เพียงพอ: {$center}");
+            // ✅ ใช้ total capacity จริง แทนการคำนวณจากห้องแรก
+            $totalCapacity = $rooms->sum('capacity');
+
+            if ($totalStudents > $totalCapacity) {
+                throw new Exception("ห้องสอบไม่เพียงพอ: {$center} (นักเรียน {$totalStudents} คน, ที่นั่งรวม {$totalCapacity} ที่)");
             }
 
-            $baseSeatsPerRoom = floor($totalStudents / $roomsNeeded);
-            $extraSeats       = $totalStudents % $roomsNeeded;
-            $studentIndex     = 0;
+            $studentIndex = 0;
 
-            for ($i = 0; $i < $roomsNeeded; $i++) {
-                if ($studentIndex >= $totalStudents) {
-                    break;
-                }
+            // ✅ จัดที่นั่งทีละห้องตาม capacity จริงของแต่ละห้อง
+            foreach ($rooms as $room) {
+                if ($studentIndex >= $totalStudents) break;
 
-                $room          = $rooms[$roomPointer];
-                $seatsThisRoom = $baseSeatsPerRoom + ($i < $extraSeats ? 1 : 0);
+                $capacity   = $room->capacity;
+                $seatsToUse = min($capacity, $totalStudents - $studentIndex);
 
-                for ($seat = 1; $seat <= $seatsThisRoom && $studentIndex < $totalStudents; $seat++) {
+                for ($seat = 1; $seat <= $seatsToUse; $seat++) {
                     $student  = $studentList[$studentIndex];
                     $result[] = [
                         'participant_id'   => $student->id,
@@ -209,17 +286,16 @@ class ArrangeSeatController extends Controller
                         'level'            => $student->level,
                         'building'         => $room->building,
                         'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room}",
-                        'floor'         => $room->floor,
-                        'room'          => $room->room,
-                        'session'       => $room->session,
-                        'seat_no'       => $seat,
-                        'first_name_th' => $student->first_name_th,
-                        'last_name_th'  => $student->last_name_th,
-                        'name_th'       => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
+                        'floor'            => $room->floor,
+                        'room'             => $room->room,
+                        'session'          => $room->session,
+                        'seat_no'          => $seat,
+                        'first_name_th'    => $student->first_name_th,
+                        'last_name_th'     => $student->last_name_th,
+                        'name_th'          => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
                     ];
                     $studentIndex++;
                 }
-                $roomPointer++;
             }
         }
 

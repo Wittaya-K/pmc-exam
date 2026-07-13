@@ -115,7 +115,7 @@
                     <!-- small box -->
                     <div class="small-box bg-lightblue">
                         <div class="inner">
-                            <h3>30 ที่นั่ง</h3>
+                            <h3>30 - 120 ที่นั่ง</h3>
 
                             <p>ต่อห้องโดยประมาณ</p>
                         </div>
@@ -197,7 +197,7 @@
                 },
                 complete: function() {
                     waitingDialog.hide();
-                    location.reload();
+                    // location.reload();
                 },
                 error: function(error) {
                     console.log(error);

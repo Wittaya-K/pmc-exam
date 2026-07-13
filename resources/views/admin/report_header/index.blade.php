@@ -45,7 +45,7 @@
             <table class="table table-bordered table-striped table-hover table-report-header">
                 <thead>
                     <tr width="10">
-                        <th>#</th>
+                        {{-- <th>#</th> --}}
                         <th>ชื่อโครงการ (ไทย)</th>
                         <th>ชื่อโครงการ (อังกฤษ)</th>
                         <th>วันที่เริ่มเปิดสอบ</th>
@@ -128,13 +128,14 @@
             processing: true
             , serverSide: false
             , ajax: "{{ route('admin.report_header.index') }}"
-            , columns: [{
-                    data: 'id'
-                    , name: 'id'
-                    , orderable: false
-                    , searchable: false
-                }
-                , {
+            , columns: [
+                // {
+                //     data: 'id'
+                //     , name: 'id'
+                //     , orderable: false
+                //     , searchable: false
+                // }
+                {
                     data: 'project_name_th'
                     , name: 'project_name_th'
                     , width: '300px'
@@ -155,6 +156,7 @@
                     , searchable: false
                 }
             , ]
+            , "ordering": false
         });
 
         $('#createReportHeader').click(function() {
