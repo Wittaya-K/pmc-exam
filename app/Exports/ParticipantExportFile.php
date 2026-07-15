@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
-class ParticipantExportFile implements FromQuery, WithHeadings, WithChunkReading,WithColumnWidths,WithStyles
+class ParticipantExportFile implements FromQuery, WithHeadings, WithChunkReading, WithColumnWidths, WithStyles
 {
 
     public function query()
@@ -31,9 +31,9 @@ class ParticipantExportFile implements FromQuery, WithHeadings, WithChunkReading
             'session',
             'seat_no'
         )
-        ->orderBy('test_center', 'asc')
-        ->orderBy('program_name', 'asc')
-        ->orderBy('id');
+            ->orderBy('test_center', 'asc')
+            ->orderBy('program_name', 'asc')
+            ->orderBy('id');
     }
 
     public function headings(): array
@@ -96,8 +96,8 @@ class ParticipantExportFile implements FromQuery, WithHeadings, WithChunkReading
                 'font' => ['bold' => true],
                 'alignment' => [
                     'horizontal' => 'center',
-                    'vertical'   => 'center',
-                    'wrapText'   => true,
+                    'vertical' => 'center',
+                    'wrapText' => true,
                 ],
             ],
         ];

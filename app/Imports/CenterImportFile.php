@@ -19,14 +19,14 @@ class CenterImportFile implements ToModel, WithStartRow, WithChunkReading, WithB
     {
 
         return new TestCenter([
-            'test_center'   => $row[0] ?? null,
-            'building'      => $row[1] ?? null,
-            'floor'         => $row[2] ?? null,
-            'room'          => $row[3] ?? null,
-            'capacity'      => $row[4] ?? null,
-            'session'       => $row[5] ?? null,
+            'test_center' => $row[0] ?? null,
+            'building' => $row[1] ?? null,
+            'floor' => $row[2] ?? null,
+            'room' => $row[3] ?? null,
+            'capacity' => $row[4] ?? null,
+            'session' => $row[5] ?? null,
             'air_condition' => $row[6] ?? null,
-            'fan'           => $row[7] ?? null,
+            'fan' => $row[7] ?? null,
         ]);
     }
 

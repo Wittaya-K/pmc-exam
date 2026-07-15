@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
-class TestCenterExportFile implements FromQuery, WithHeadings, WithChunkReading,WithColumnWidths,WithStyles
+class TestCenterExportFile implements FromQuery, WithHeadings, WithChunkReading, WithColumnWidths, WithStyles
 {
 
     public function query()
@@ -25,7 +25,7 @@ class TestCenterExportFile implements FromQuery, WithHeadings, WithChunkReading,
             'air_condition',
             'fan'
         )
-        ->orderBy('id');
+            ->orderBy('id');
     }
 
     public function headings(): array
@@ -76,8 +76,8 @@ class TestCenterExportFile implements FromQuery, WithHeadings, WithChunkReading,
                 'font' => ['bold' => true],
                 'alignment' => [
                     'horizontal' => 'center',
-                    'vertical'   => 'center',
-                    'wrapText'   => true,
+                    'vertical' => 'center',
+                    'wrapText' => true,
                 ],
             ],
         ];
