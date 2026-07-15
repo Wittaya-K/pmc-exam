@@ -130,6 +130,7 @@ class ArrangeSeatController extends Controller
         // ============================================
         // ส่วนที่ 1: ศูนย์สอบทั่วไป (ไม่มี session A/B)
         // ============================================
+
         $psuCenter = ParticipantImport::distinct()->where('test_center', 'like', '%คณะวิทยาศาสตร์%ม.อ%')
             ->value('test_center');
 
@@ -185,65 +186,148 @@ class ArrangeSeatController extends Controller
             ->get()
             ->groupBy('test_center');
 
-        foreach ($studentsGeneral as $center => $studentList) {
+        // foreach ($studentsGeneral as $center => $studentList) {
 
-            if (!isset($examRoomsGeneral[$center])) {
-                throw new Exception("ไม่มีข้อมูลห้องสอบของศูนย์สอบ {$center}");
-            }
+        //     if (!isset($examRoomsGeneral[$center])) {
+        //         throw new Exception("ไม่มีข้อมูลห้องสอบของศูนย์สอบ {$center}");
+        //     }
+
+        //     $rooms = $examRoomsGeneral[$center]->values();
+        //     $totalStudents = $studentList->count();
+
+        //     // ใช้ total capacity จริง แทนการคำนวณจากห้องแรก
+        //     $totalCapacity = $rooms->sum('capacity');
+
+        //     if ($totalStudents > $totalCapacity) {
+        //         throw new Exception("ห้องสอบไม่เพียงพอ: {$center} (นักเรียน {$totalStudents} คน, ที่นั่งรวม {$totalCapacity} ที่)");
+        //     }
+
+        //     // $studentIndex = 0;
+
+        //     // // จัดที่นั่งทีละห้องตาม capacity จริงของแต่ละห้อง
+        //     // foreach ($rooms as $room) {
+        //     //     if ($studentIndex >= $totalStudents)
+        //     //         break;
+
+        //     //     $capacity = $room->capacity;
+        //     //     $seatsToUse = min($capacity, $totalStudents - $studentIndex);
+
+        //     //     for ($seat = 1; $seat <= $seatsToUse; $seat++) {
+        //     //         $student = $studentList[$studentIndex];
+        //     //         $result[] = [
+        //     //             'participant_id' => $student->id,
+        //     //             'test_center' => $center,
+        //     //             'program_name' => $student->program_name,
+        //     //             'school' => $student->school,
+        //     //             'classLevel' => $student->classLevel,
+        //     //             'level' => $student->level,
+        //     //             'building' => $room->building,
+        //     //             'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room}",
+        //     //             'floor' => $room->floor,
+        //     //             'room' => $room->room,
+        //     //             'session' => $room->session,
+        //     //             'seat_no' => $seat,
+        //     //             'first_name_th' => $student->first_name_th,
+        //     //             'last_name_th' => $student->last_name_th,
+        //     //             'name_th' => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
+        //     //         ];
+        //     //         $studentIndex++;
+        //     //     }
+        //     // }
+
+        //     // เฉลี่ยเฉพาะเมื่อ capacity ทุกห้องเท่ากัน
+        //     $firstCapacity = $rooms->first()->capacity;
+        //     $allSameCapacity = $rooms->every(fn($r) => $r->capacity == $firstCapacity);
+
+        //     if ($allSameCapacity) {
+        //         // แบบเฉลี่ย
+        //         $roomsNeeded = ceil($totalStudents / $firstCapacity);
+        //         $baseSeats = floor($totalStudents / $roomsNeeded);
+        //         $extraSeats = $totalStudents % $roomsNeeded;
+        //         $studentIndex = 0;
+
+        //         for ($i = 0; $i < $roomsNeeded; $i++) {
+        //             if ($studentIndex >= $totalStudents)
+        //                 break;
+        //             $room = $rooms[$i];
+        //             $seatsThisRoom = $baseSeats + ($i < $extraSeats ? 1 : 0);
+
+        //             for ($seat = 1; $seat <= $seatsThisRoom; $seat++) {
+        //                 $student = $studentList[$studentIndex];
+        //                 $result[] = [
+        //                     'participant_id' => $student->id,
+        //                     'test_center' => $center,
+        //                     'program_name' => $student->program_name,
+        //                     'school' => $student->school,
+        //                     'classLevel' => $student->classLevel,
+        //                     'level' => $student->level,
+        //                     'building' => $room->building,
+        //                     'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room}",
+        //                     'floor' => $room->floor,
+        //                     'room' => $room->room,
+        //                     'session' => $room->session,
+        //                     'seat_no' => $seat,
+        //                     'first_name_th' => $student->first_name_th,
+        //                     'last_name_th' => $student->last_name_th,
+        //                     'name_th' => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
+        //                 ];
+        //                 $studentIndex++;
+        //             }
+        //         }
+        //     } else {
+        //         // แบบเติมตามลำดับ (capacity ต่างกัน)
+        //         $studentIndex = 0;
+        //         foreach ($rooms as $room) {
+        //             if ($studentIndex >= $totalStudents)
+        //                 break;
+        //             $seatsToUse = min($room->capacity, $totalStudents - $studentIndex);
+        //             for ($seat = 1; $seat <= $seatsToUse; $seat++) {
+        //                 $student = $studentList[$studentIndex];
+        //                 $result[] = [
+        //                     'participant_id' => $student->id,
+        //                     'test_center' => $center,
+        //                     'program_name' => $student->program_name,
+        //                     'school' => $student->school,
+        //                     'classLevel' => $student->classLevel,
+        //                     'level' => $student->level,
+        //                     'building' => $room->building,
+        //                     'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room}",
+        //                     'floor' => $room->floor,
+        //                     'room' => $room->room,
+        //                     'session' => $room->session,
+        //                     'seat_no' => $seat,
+        //                     'first_name_th' => $student->first_name_th,
+        //                     'last_name_th' => $student->last_name_th,
+        //                     'name_th' => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
+        //                 ];
+        //                 $studentIndex++;
+        //             }
+        //         }
+        //     }
+        // }
+
+        // การตรวจสอบอัตโนมัติในส่วนที่ 1
+        foreach ($studentsGeneral as $center => $studentList) {
 
             $rooms = $examRoomsGeneral[$center]->values();
             $totalStudents = $studentList->count();
-
-            // ✅ ใช้ total capacity จริง แทนการคำนวณจากห้องแรก
             $totalCapacity = $rooms->sum('capacity');
 
             if ($totalStudents > $totalCapacity) {
-                throw new Exception("ห้องสอบไม่เพียงพอ: {$center} (นักเรียน {$totalStudents} คน, ที่นั่งรวม {$totalCapacity} ที่)");
+                throw new Exception("ห้องสอบไม่เพียงพอ: {$center}");
             }
 
-            // $studentIndex = 0;
+            $studentIndex = 0;
 
-            // // ✅ จัดที่นั่งทีละห้องตาม capacity จริงของแต่ละห้อง
-            // foreach ($rooms as $room) {
-            //     if ($studentIndex >= $totalStudents)
-            //         break;
-
-            //     $capacity = $room->capacity;
-            //     $seatsToUse = min($capacity, $totalStudents - $studentIndex);
-
-            //     for ($seat = 1; $seat <= $seatsToUse; $seat++) {
-            //         $student = $studentList[$studentIndex];
-            //         $result[] = [
-            //             'participant_id' => $student->id,
-            //             'test_center' => $center,
-            //             'program_name' => $student->program_name,
-            //             'school' => $student->school,
-            //             'classLevel' => $student->classLevel,
-            //             'level' => $student->level,
-            //             'building' => $room->building,
-            //             'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room}",
-            //             'floor' => $room->floor,
-            //             'room' => $room->room,
-            //             'session' => $room->session,
-            //             'seat_no' => $seat,
-            //             'first_name_th' => $student->first_name_th,
-            //             'last_name_th' => $student->last_name_th,
-            //             'name_th' => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
-            //         ];
-            //         $studentIndex++;
-            //     }
-            // }
-
-            // เฉลี่ยเฉพาะเมื่อ capacity ทุกห้องเท่ากัน
+            // ตรวจว่า capacity เท่ากันทุกห้องไหม
             $firstCapacity = $rooms->first()->capacity;
             $allSameCapacity = $rooms->every(fn($r) => $r->capacity == $firstCapacity);
 
             if ($allSameCapacity) {
-                // แบบเฉลี่ย
+                // รูปแบบที่ 1: เฉลี่ยเท่าๆ กัน
                 $roomsNeeded = ceil($totalStudents / $firstCapacity);
                 $baseSeats = floor($totalStudents / $roomsNeeded);
                 $extraSeats = $totalStudents % $roomsNeeded;
-                $studentIndex = 0;
 
                 for ($i = 0; $i < $roomsNeeded; $i++) {
                     if ($studentIndex >= $totalStudents)
@@ -274,12 +358,12 @@ class ArrangeSeatController extends Controller
                     }
                 }
             } else {
-                // แบบเติมตามลำดับ (capacity ต่างกัน)
-                $studentIndex = 0;
+                // รูปแบบที่ 2: เติมตามลำดับห้อง capacity จริง
                 foreach ($rooms as $room) {
                     if ($studentIndex >= $totalStudents)
                         break;
                     $seatsToUse = min($room->capacity, $totalStudents - $studentIndex);
+
                     for ($seat = 1; $seat <= $seatsToUse; $seat++) {
                         $student = $studentList[$studentIndex];
                         $result[] = [
@@ -331,8 +415,6 @@ class ArrangeSeatController extends Controller
         // ส่วนที่ 2: คณะวิทยาศาสตร์ ม.อ. (มี session A/B)
         // ============================================
 
-        // $psuCenter = 'คณะวิทยาศาสตร์ม.อ.วิทยาเขตหาดใหญ่';
-
         $examRoomsPsu = TestCenter::select(
             'test_center',
             'building',
@@ -380,7 +462,7 @@ class ArrangeSeatController extends Controller
             ->orderBy('program_name', 'asc')
             ->pluck('program_name');
 
-        // ✅ ตรวจสอบว่ามีครบ 3 program
+        // ตรวจสอบว่ามีครบ 3 program
         if ($getProgram->count() < 3) {
             throw new Exception("ข้อมูล program ไม่ครบสำหรับศูนย์สอบ {$psuCenter}");
         }
@@ -389,7 +471,7 @@ class ArrangeSeatController extends Controller
         $programB = $getProgram[1]; // มัธยมต้น (ม.1 - ม.3)
         $programC = $getProgram[2]; // มัธยมปลาย (ม.4 - ม.6)
 
-        // นับจำนวนนักเรียนแต่ละ program
+        // นับจำนวนนักเรียนแต่ละ program การสอบ
         $programCounts = [$programA => 0, $programB => 0, $programC => 0];
         foreach ($studentsPsu as $student) {
             if (isset($programCounts[$student->program_name])) {
@@ -401,13 +483,13 @@ class ArrangeSeatController extends Controller
         $m13_total = $programCounts[$programB] ?? 0; // 673
         $m46_total = $programCounts[$programC] ?? 0; // 936
 
-        // ✅ คำนวณการแบ่ง ม.1-3
+        // คำนวณการแบ่ง ม.1-3
         // Session A: ป.4-6 (681) + ม.1-3 บางส่วน = 1,178 พอดี
         // Session B: ม.1-3 ที่เหลือ + ม.4-6 (936)
         $m13_to_A = $capacityA - $p46_total; // 1178 - 681 = 497
         $m13_to_B = $m13_total - $m13_to_A;  // 673 - 497 = 176
 
-        // ✅ แบ่งนักเรียนตามแผน
+        // แบ่งนักเรียนตามแผนการสอบ
         $programGroups = [
             "{$programA} → Session A" => [],
             "{$programB} → Session A" => [],
