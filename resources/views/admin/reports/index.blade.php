@@ -1,11 +1,5 @@
 @extends('layouts.admin')
 @section('content')
-    <style>
-        #tbl_student {
-            table-layout: fixed;
-            white-space: nowrap;
-        }
-    </style>
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -74,30 +68,6 @@
             }
         });
 
-        // $('#btnReport').click(function(e) {
-        //     e.preventDefault();
-
-        //     if ($('#test_center').val() == '') {
-        //         Swal.fire({
-        //             title: "แจ้งเตือน!",
-        //             text: "กรุณาระบุศูนย์สอบ!",
-        //             icon: "warning"
-        //         });
-        //         return false;
-        //     }
-
-        //     if ($('#room').val() == '') {
-        //         Swal.fire({
-        //             title: "แจ้งเตือน!",
-        //             text: "กรุณาระบุห้องสอบ!",
-        //             icon: "warning"
-        //         });
-        //         return false;
-        //     }
-
-        //     return true;
-        // });
-
         $('#pdf_print_form').on('submit', function (e) {
 
             if ($('#test_center').val() == '') {
@@ -109,18 +79,6 @@
                 });
                 return;
             }
-
-            // if ($('#room').val() == '') {
-            //     e.preventDefault();
-            //     Swal.fire({
-            //         title: "แจ้งเตือน!",
-            //         text: "กรุณาระบุห้องสอบ!",
-            //         icon: "warning"
-            //     });
-            //     return;
-            // }
-
-            // ถ้าผ่านทั้งหมด → submit ปกติ
         });
 
     </script>

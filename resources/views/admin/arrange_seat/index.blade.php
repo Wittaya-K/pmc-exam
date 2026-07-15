@@ -1,11 +1,5 @@
 @extends('layouts.admin')
 @section('content')
-    <style>
-        #tbl_schedule {
-            table-layout: fixed;
-            white-space: nowrap;
-        }
-    </style>
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">

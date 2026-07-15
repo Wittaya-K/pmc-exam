@@ -17,8 +17,15 @@ class ArrangeSeatController extends Controller
 {
     public function index()
     {
-        $countStudent    = ParticipantImport::select('id')->count(); //จำนวนนักเรียนทั้งหมด
-        $countRoom      = TestCenter::select('room')->count();       //จำนวนห้องที่จัดสอบแล้ว
+        $countStudent = ParticipantImport::select('id')->count(); //จำนวนนักเรียนทั้งหมด
+        // $countRoom      = TestCenter::select('room')->count();       //จำนวนห้องที่จัดสอบแล้ว
+        $usedRoomsWithSession = DB::table('seat_assign')
+            ->select('test_center', 'building', 'room', 'session')
+            ->groupBy('test_center', 'building', 'room', 'session')
+            ->get()
+            ->count();
+
+        $countRoom = $usedRoomsWithSession;
         $countSeatAssign = SeatAssign::select('seat_no')->count();   //จำนวนที่นั่งจัดสอบแล้ว
 
         $selectTestcenter = SeatAssign::select('test_center')
@@ -65,7 +72,7 @@ class ArrangeSeatController extends Controller
                     // Loop through each file and get the original name
                     $fileNames = [];
                     foreach ($file as $singleFile) {
-                        $fileName    = $singleFile->getClientOriginalName();
+                        $fileName = $singleFile->getClientOriginalName();
                         $fileNames[] = $singleFile->getClientOriginalName();
                         // $singleFile->storeAs('public/uploads', $fileName);
                         $singleFile->move(public_path('uploads'), $fileName);
@@ -101,7 +108,7 @@ class ArrangeSeatController extends Controller
                     // Loop through each file and get the original name
                     $fileNames = [];
                     foreach ($file as $singleFile) {
-                        $fileName    = $singleFile->getClientOriginalName();
+                        $fileName = $singleFile->getClientOriginalName();
                         $fileNames[] = $singleFile->getClientOriginalName();
                         // $singleFile->storeAs('public/uploads', $fileName);
                         $singleFile->move(public_path('uploads'), $fileName);
@@ -145,7 +152,12 @@ class ArrangeSeatController extends Controller
             ->toArray();
 
         $examRoomsGeneral = TestCenter::select(
-            'test_center', 'building', 'floor', 'room', 'capacity', 'session'
+            'test_center',
+            'building',
+            'floor',
+            'room',
+            'capacity',
+            'session'
         )
             ->whereIn('test_center', $generalCenters)
             ->orderBy('floor')
@@ -155,15 +167,16 @@ class ArrangeSeatController extends Controller
             ->get()
             ->groupBy('test_center');
 
-        // dd([
-        //     'psuCenterInTestCenter' => $psuCenterInTestCenter,
-        //     'generalCenters' => $generalCenters,
-        //     'กัลยาณี_rooms' => $examRoomsGeneral['โรงเรียนกัลยาณีศรีธรรมราช'] ?? 'NOT FOUND',
-        // ]);
-
         $studentsGeneral = ParticipantImport::select(
-            'id', 'title_th', 'first_name_th', 'last_name_th',
-            'classLevel', 'level', 'school', 'program_name', 'test_center'
+            'id',
+            'title_th',
+            'first_name_th',
+            'last_name_th',
+            'classLevel',
+            'level',
+            'school',
+            'program_name',
+            'test_center'
         )
             ->where('test_center', '!=', $psuCenter)
             ->orderBy('test_center', 'asc')
@@ -172,91 +185,13 @@ class ArrangeSeatController extends Controller
             ->get()
             ->groupBy('test_center');
 
-        $result = [];
-
-        // foreach ($studentsGeneral as $center => $studentList) {
-
-        //     if (! isset($examRoomsGeneral[$center])) {
-        //         throw new Exception("ไม่มีข้อมูลห้องสอบของศูนย์สอบ {$center}");
-        //     }
-
-        //     $rooms       = $examRoomsGeneral[$center]->values();
-        //     $roomPointer = 0;
-
-        //     $totalStudents = $studentList->count();
-        //     $capacity      = $rooms[$roomPointer]->capacity;
-        //     $roomsNeeded   = ceil($totalStudents / $capacity);
-
-        //     if ($roomsNeeded > $rooms->count()) {
-        //         throw new Exception("ห้องสอบไม่เพียงพอ: {$center}, จำนวนนักเรียน: {$totalStudents}, ความจุ: {$capacity}, จำนวนห้องที่ต้องการ: {$roomsNeeded}");
-        //     }
-
-        //     $baseSeatsPerRoom = floor($totalStudents / $roomsNeeded);
-        //     $extraSeats       = $totalStudents % $roomsNeeded;
-        //     $studentIndex     = 0;
-
-        //     for ($i = 0; $i < $roomsNeeded; $i++) {
-        //         if ($studentIndex >= $totalStudents) {
-        //             break;
-        //         }
-
-        //         $room          = $rooms[$roomPointer];
-        //         $seatsThisRoom = $baseSeatsPerRoom + ($i < $extraSeats ? 1 : 0);
-
-        //         for ($seat = 1; $seat <= $seatsThisRoom && $studentIndex < $totalStudents; $seat++) {
-        //             $student  = $studentList[$studentIndex];
-        //             $result[] = [
-        //                 'participant_id'   => $student->id,
-        //                 'test_center'      => $center,
-        //                 'program_name'     => $student->program_name,
-        //                 'school'           => $student->school,
-        //                 'classLevel'       => $student->classLevel,
-        //                 'level'            => $student->level,
-        //                 'building'         => $room->building,
-        //                 'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room}",
-        //                 'floor'         => $room->floor,
-        //                 'room'          => $room->room,
-        //                 'session'       => $room->session,
-        //                 'seat_no'       => $seat,
-        //                 'first_name_th' => $student->first_name_th,
-        //                 'last_name_th'  => $student->last_name_th,
-        //                 'name_th'       => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
-        //             ];
-        //             $studentIndex++;
-        //         }
-        //         $roomPointer++;
-        //     }
-        // }
-
-        // // บันทึกศูนย์ทั่วไป
-        // foreach ($result as $row) {
-        //     SeatAssign::updateOrCreate(
-        //         ['id' => $row['participant_id']],
-        //         [
-        //             'first_name_th'    => $row['first_name_th'],
-        //             'last_name_th'     => $row['last_name_th'],
-        //             'school'           => $row['school'],
-        //             'program_name'     => $row['program_name'],
-        //             'test_center'      => $row['test_center'],
-        //             'classLevel'       => $row['classLevel'],
-        //             'level'            => $row['level'],
-        //             'build_floor_room' => $row['build_floor_room'],
-        //             'building'         => $row['building'],
-        //             'floor'            => $row['floor'],
-        //             'room'             => $row['room'],
-        //             'session'          => $row['session'],
-        //             'seat_no'          => $row['seat_no'],
-        //         ]
-        //     );
-        // }
-
         foreach ($studentsGeneral as $center => $studentList) {
 
-            if (! isset($examRoomsGeneral[$center])) {
+            if (!isset($examRoomsGeneral[$center])) {
                 throw new Exception("ไม่มีข้อมูลห้องสอบของศูนย์สอบ {$center}");
             }
 
-            $rooms         = $examRoomsGeneral[$center]->values();
+            $rooms = $examRoomsGeneral[$center]->values();
             $totalStudents = $studentList->count();
 
             // ✅ ใช้ total capacity จริง แทนการคำนวณจากห้องแรก
@@ -266,35 +201,106 @@ class ArrangeSeatController extends Controller
                 throw new Exception("ห้องสอบไม่เพียงพอ: {$center} (นักเรียน {$totalStudents} คน, ที่นั่งรวม {$totalCapacity} ที่)");
             }
 
-            $studentIndex = 0;
+            // $studentIndex = 0;
 
-            // ✅ จัดที่นั่งทีละห้องตาม capacity จริงของแต่ละห้อง
-            foreach ($rooms as $room) {
-                if ($studentIndex >= $totalStudents) break;
+            // // ✅ จัดที่นั่งทีละห้องตาม capacity จริงของแต่ละห้อง
+            // foreach ($rooms as $room) {
+            //     if ($studentIndex >= $totalStudents)
+            //         break;
 
-                $capacity   = $room->capacity;
-                $seatsToUse = min($capacity, $totalStudents - $studentIndex);
+            //     $capacity = $room->capacity;
+            //     $seatsToUse = min($capacity, $totalStudents - $studentIndex);
 
-                for ($seat = 1; $seat <= $seatsToUse; $seat++) {
-                    $student  = $studentList[$studentIndex];
-                    $result[] = [
-                        'participant_id'   => $student->id,
-                        'test_center'      => $center,
-                        'program_name'     => $student->program_name,
-                        'school'           => $student->school,
-                        'classLevel'       => $student->classLevel,
-                        'level'            => $student->level,
-                        'building'         => $room->building,
-                        'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room}",
-                        'floor'            => $room->floor,
-                        'room'             => $room->room,
-                        'session'          => $room->session,
-                        'seat_no'          => $seat,
-                        'first_name_th'    => $student->first_name_th,
-                        'last_name_th'     => $student->last_name_th,
-                        'name_th'          => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
-                    ];
-                    $studentIndex++;
+            //     for ($seat = 1; $seat <= $seatsToUse; $seat++) {
+            //         $student = $studentList[$studentIndex];
+            //         $result[] = [
+            //             'participant_id' => $student->id,
+            //             'test_center' => $center,
+            //             'program_name' => $student->program_name,
+            //             'school' => $student->school,
+            //             'classLevel' => $student->classLevel,
+            //             'level' => $student->level,
+            //             'building' => $room->building,
+            //             'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room}",
+            //             'floor' => $room->floor,
+            //             'room' => $room->room,
+            //             'session' => $room->session,
+            //             'seat_no' => $seat,
+            //             'first_name_th' => $student->first_name_th,
+            //             'last_name_th' => $student->last_name_th,
+            //             'name_th' => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
+            //         ];
+            //         $studentIndex++;
+            //     }
+            // }
+
+            // เฉลี่ยเฉพาะเมื่อ capacity ทุกห้องเท่ากัน
+            $firstCapacity = $rooms->first()->capacity;
+            $allSameCapacity = $rooms->every(fn($r) => $r->capacity == $firstCapacity);
+
+            if ($allSameCapacity) {
+                // แบบเฉลี่ย
+                $roomsNeeded = ceil($totalStudents / $firstCapacity);
+                $baseSeats = floor($totalStudents / $roomsNeeded);
+                $extraSeats = $totalStudents % $roomsNeeded;
+                $studentIndex = 0;
+
+                for ($i = 0; $i < $roomsNeeded; $i++) {
+                    if ($studentIndex >= $totalStudents)
+                        break;
+                    $room = $rooms[$i];
+                    $seatsThisRoom = $baseSeats + ($i < $extraSeats ? 1 : 0);
+
+                    for ($seat = 1; $seat <= $seatsThisRoom; $seat++) {
+                        $student = $studentList[$studentIndex];
+                        $result[] = [
+                            'participant_id' => $student->id,
+                            'test_center' => $center,
+                            'program_name' => $student->program_name,
+                            'school' => $student->school,
+                            'classLevel' => $student->classLevel,
+                            'level' => $student->level,
+                            'building' => $room->building,
+                            'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room}",
+                            'floor' => $room->floor,
+                            'room' => $room->room,
+                            'session' => $room->session,
+                            'seat_no' => $seat,
+                            'first_name_th' => $student->first_name_th,
+                            'last_name_th' => $student->last_name_th,
+                            'name_th' => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
+                        ];
+                        $studentIndex++;
+                    }
+                }
+            } else {
+                // แบบเติมตามลำดับ (capacity ต่างกัน)
+                $studentIndex = 0;
+                foreach ($rooms as $room) {
+                    if ($studentIndex >= $totalStudents)
+                        break;
+                    $seatsToUse = min($room->capacity, $totalStudents - $studentIndex);
+                    for ($seat = 1; $seat <= $seatsToUse; $seat++) {
+                        $student = $studentList[$studentIndex];
+                        $result[] = [
+                            'participant_id' => $student->id,
+                            'test_center' => $center,
+                            'program_name' => $student->program_name,
+                            'school' => $student->school,
+                            'classLevel' => $student->classLevel,
+                            'level' => $student->level,
+                            'building' => $room->building,
+                            'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room}",
+                            'floor' => $room->floor,
+                            'room' => $room->room,
+                            'session' => $room->session,
+                            'seat_no' => $seat,
+                            'first_name_th' => $student->first_name_th,
+                            'last_name_th' => $student->last_name_th,
+                            'name_th' => "{$student->title_th}{$student->first_name_th} {$student->last_name_th}",
+                        ];
+                        $studentIndex++;
+                    }
                 }
             }
         }
@@ -304,19 +310,19 @@ class ArrangeSeatController extends Controller
             SeatAssign::updateOrCreate(
                 ['id' => $row['participant_id']],
                 [
-                    'first_name_th'    => $row['first_name_th'],
-                    'last_name_th'     => $row['last_name_th'],
-                    'school'           => $row['school'],
-                    'program_name'     => $row['program_name'],
-                    'test_center'      => $row['test_center'],
-                    'classLevel'       => $row['classLevel'],
-                    'level'            => $row['level'],
+                    'first_name_th' => $row['first_name_th'],
+                    'last_name_th' => $row['last_name_th'],
+                    'school' => $row['school'],
+                    'program_name' => $row['program_name'],
+                    'test_center' => $row['test_center'],
+                    'classLevel' => $row['classLevel'],
+                    'level' => $row['level'],
                     'build_floor_room' => $row['build_floor_room'],
-                    'building'         => $row['building'],
-                    'floor'            => $row['floor'],
-                    'room'             => $row['room'],
-                    'session'          => $row['session'],
-                    'seat_no'          => $row['seat_no'],
+                    'building' => $row['building'],
+                    'floor' => $row['floor'],
+                    'room' => $row['room'],
+                    'session' => $row['session'],
+                    'seat_no' => $row['seat_no'],
                 ]
             );
         }
@@ -328,7 +334,12 @@ class ArrangeSeatController extends Controller
         // $psuCenter = 'คณะวิทยาศาสตร์ม.อ.วิทยาเขตหาดใหญ่';
 
         $examRoomsPsu = TestCenter::select(
-            'test_center', 'building', 'floor', 'room', 'capacity', 'session'
+            'test_center',
+            'building',
+            'floor',
+            'room',
+            'capacity',
+            'session'
         )
             ->where('test_center', '=', $psuCenterInTestCenter)
             ->orderBy('floor')
@@ -338,8 +349,15 @@ class ArrangeSeatController extends Controller
             ->groupBy(['test_center', 'session']);
 
         $studentsPsu = ParticipantImport::select(
-            'id', 'title_th', 'first_name_th', 'last_name_th',
-            'classLevel', 'level', 'school', 'program_name', 'test_center'
+            'id',
+            'title_th',
+            'first_name_th',
+            'last_name_th',
+            'classLevel',
+            'level',
+            'school',
+            'program_name',
+            'test_center'
         )
             ->where('test_center', '=', $psuCenter)
             ->orderBy('program_name', 'asc')
@@ -429,13 +447,13 @@ class ArrangeSeatController extends Controller
         }
 
         // ตรวจสอบห้องสอบ PSU
-        if (! isset($examRoomsPsu[$psuCenter])) {
+        if (!isset($examRoomsPsu[$psuCenter])) {
             throw new Exception("ไม่มีข้อมูลห้องสอบของศูนย์สอบ {$psuCenter}");
         }
 
         $sessionsData = $examRoomsPsu[$psuCenter];
 
-        if (! isset($sessionsData['A']) || ! isset($sessionsData['B'])) {
+        if (!isset($sessionsData['A']) || !isset($sessionsData['B'])) {
             throw new Exception("ข้อมูล session ไม่ครบสำหรับศูนย์สอบ {$psuCenter}");
         }
 
@@ -443,25 +461,25 @@ class ArrangeSeatController extends Controller
         $roomsSessionB = $sessionsData['B']->values();
 
         $roomPointerA = $roomPointerB = 0;
-        $lastSeatA    = $lastSeatB    = 0;
-        $resultPsu    = [];
+        $lastSeatA = $lastSeatB = 0;
+        $resultPsu = [];
 
         foreach ($programGroups as $groupName => $studentList) {
             if ($studentList->isEmpty()) {
                 continue;
             }
 
-            $totalStudents  = $studentList->count();
+            $totalStudents = $studentList->count();
             $currentSession = $programSessions[$groupName];
 
             if ($currentSession === 'A') {
-                $rooms       = $roomsSessionA;
+                $rooms = $roomsSessionA;
                 $roomPointer = &$roomPointerA;
-                $lastSeat    = &$lastSeatA;
+                $lastSeat = &$lastSeatA;
             } else {
-                $rooms       = $roomsSessionB;
+                $rooms = $roomsSessionB;
                 $roomPointer = &$roomPointerB;
-                $lastSeat    = &$lastSeatB;
+                $lastSeat = &$lastSeatB;
             }
 
             $studentIndex = 0;
@@ -471,27 +489,27 @@ class ArrangeSeatController extends Controller
                     throw new Exception("ห้องสอบไม่เพียงพอสำหรับ session {$currentSession}: {$psuCenter} ({$groupName})");
                 }
 
-                $room     = $rooms[$roomPointer];
+                $room = $rooms[$roomPointer];
                 $capacity = $room->capacity;
 
-                $availableSeats    = $capacity - $lastSeat;
+                $availableSeats = $capacity - $lastSeat;
                 $studentsRemaining = $totalStudents - $studentIndex;
-                $seatsToUse        = min($availableSeats, $studentsRemaining);
+                $seatsToUse = min($availableSeats, $studentsRemaining);
 
                 for ($i = 0; $i < $seatsToUse; $i++) {
                     $lastSeat++;
-                    $student     = $studentList[$studentIndex];
+                    $student = $studentList[$studentIndex];
                     $resultPsu[] = [
-                        'participant_id'   => $student->id,
-                        'test_center'      => $psuCenter,
-                        'program_name'     => $student->program_name,
-                        'school'           => $student->school,
-                        'classLevel'       => $student->classLevel,
-                        'level'            => $student->level,
-                        'building'         => $room->building,
-                        'floor'            => $room->floor,
-                        'room'             => $room->room,
-                        'session'          => $currentSession,
+                        'participant_id' => $student->id,
+                        'test_center' => $psuCenter,
+                        'program_name' => $student->program_name,
+                        'school' => $student->school,
+                        'classLevel' => $student->classLevel,
+                        'level' => $student->level,
+                        'building' => $room->building,
+                        'floor' => $room->floor,
+                        'room' => $room->room,
+                        'session' => $currentSession,
                         'build_floor_room' => "อาคาร {$room->building} ชั้น {$room->floor} ห้อง {$room->room} แถว {$currentSession}",
                         'seat_no' => $lastSeat,
                         'first_name_th' => $student->first_name_th,
@@ -513,28 +531,28 @@ class ArrangeSeatController extends Controller
             SeatAssign::updateOrCreate(
                 ['id' => $row['participant_id']],
                 [
-                    'first_name_th'    => $row['first_name_th'],
-                    'last_name_th'     => $row['last_name_th'],
-                    'school'           => $row['school'],
-                    'program_name'     => $row['program_name'],
-                    'test_center'      => $row['test_center'],
-                    'classLevel'       => $row['classLevel'],
-                    'level'            => $row['level'],
+                    'first_name_th' => $row['first_name_th'],
+                    'last_name_th' => $row['last_name_th'],
+                    'school' => $row['school'],
+                    'program_name' => $row['program_name'],
+                    'test_center' => $row['test_center'],
+                    'classLevel' => $row['classLevel'],
+                    'level' => $row['level'],
                     'build_floor_room' => $row['build_floor_room'],
-                    'building'         => $row['building'],
-                    'floor'            => $row['floor'],
-                    'room'             => $row['room'],
-                    'session'          => $row['session'],
-                    'seat_no'          => $row['seat_no'],
+                    'building' => $row['building'],
+                    'floor' => $row['floor'],
+                    'room' => $row['room'],
+                    'session' => $row['session'],
+                    'seat_no' => $row['seat_no'],
                 ]
             );
         }
 
         return response()->json([
-            'success'       => true,
-            'message'       => 'success',
+            'success' => true,
+            'message' => 'success',
             'general_count' => count($result),
-            'psu_count'     => count($resultPsu),
+            'psu_count' => count($resultPsu),
         ]);
     }
 
@@ -542,14 +560,14 @@ class ArrangeSeatController extends Controller
     {
         $testCenter = $request->input(key: 'test_center');
         $fNamelname = $request->input(key: 'fNamelname');
-        $fname      = null; //ชื่อ
-        $lname      = null; //นามสกุล
+        $fname = null; //ชื่อ
+        $lname = null; //นามสกุล
 
         if ($fNamelname != '') {
             $exp_fNamelname = explode(',', $fNamelname); //แยกค่าตัวแปรเพื่อเอาชื่อและนามสกุล
-            $fname          = $exp_fNamelname[0];
-            $lname          = $exp_fNamelname[1];
-            $SeatAssign     = SeatAssign::select('id', 'first_name_th', 'last_name_th', 'school', 'program_name', 'test_center', 'classLevel', 'room', 'seat_no')->where(function ($q) use ($fname, $lname) {
+            $fname = $exp_fNamelname[0];
+            $lname = $exp_fNamelname[1];
+            $SeatAssign = SeatAssign::select('id', 'first_name_th', 'last_name_th', 'school', 'program_name', 'test_center', 'classLevel', 'room', 'seat_no')->where(function ($q) use ($fname, $lname) {
                 $q->where('first_name_th', '=', $fname)
                     ->Where('last_name_th', '=', $lname);
             })
@@ -557,9 +575,9 @@ class ArrangeSeatController extends Controller
         }
         if ($fNamelname != '' && $testCenter != '') {
             $exp_fNamelname = explode(',', $fNamelname); //แยกค่าตัวแปรเพื่อเอาชื่อและนามสกุล
-            $fname          = $exp_fNamelname[0];
-            $lname          = $exp_fNamelname[1];
-            $SeatAssign     = SeatAssign::select('id', 'first_name_th', 'last_name_th', 'school', 'program_name', 'test_center', 'classLevel', 'room', 'seat_no')->where(function ($q) use ($fname, $lname, $testCenter) {
+            $fname = $exp_fNamelname[0];
+            $lname = $exp_fNamelname[1];
+            $SeatAssign = SeatAssign::select('id', 'first_name_th', 'last_name_th', 'school', 'program_name', 'test_center', 'classLevel', 'room', 'seat_no')->where(function ($q) use ($fname, $lname, $testCenter) {
                 $q->where('first_name_th', '=', $fname)
                     ->Where('last_name_th', '=', $lname)
                     ->Where('test_center', '=', $testCenter);
@@ -589,11 +607,11 @@ class ArrangeSeatController extends Controller
 
         // ค้นหาตามศูนย์สอบ
         if ($fNamelname != '' && $testCenter != '') {
-                                                         // dd($fNamelname);
+            // dd($fNamelname);
             $exp_fNamelname = explode(',', $fNamelname); //แยกค่าตัวแปรเพื่อเอาชื่อและนามสกุล
-            $fname          = $exp_fNamelname[0];
-            $lname          = $exp_fNamelname[1];
-            $SeatAssign     = SeatAssign::select('id', 'first_name_th', 'last_name_th', 'school', 'program_name', 'test_center', 'classLevel', 'room', 'seat_no')->where(function ($q) use ($fname, $lname, $testCenter) {
+            $fname = $exp_fNamelname[0];
+            $lname = $exp_fNamelname[1];
+            $SeatAssign = SeatAssign::select('id', 'first_name_th', 'last_name_th', 'school', 'program_name', 'test_center', 'classLevel', 'room', 'seat_no')->where(function ($q) use ($fname, $lname, $testCenter) {
                 $q->where('first_name_th', '=', $fname)
                     ->Where('last_name_th', '=', $lname)
                     ->Where('test_center', '=', $testCenter);
@@ -603,9 +621,9 @@ class ArrangeSeatController extends Controller
             return response()->json(['status' => true, 'data' => $SeatAssign]);
         } else {                                     // ค้นหาตามชื่อศูนย์สอบ
             $exp_fNamelname = explode(',', $fNamelname); //แยกค่าตัวแปรเพื่อเอาชื่อและนามสกุล
-            $fname          = $exp_fNamelname[0];
-            $lname          = $exp_fNamelname[1];
-            $SeatAssign     = SeatAssign::select('id', 'first_name_th', 'last_name_th', 'school', 'program_name', 'test_center', 'classLevel', 'room', 'seat_no')->where(function ($q) use ($fname, $lname, $testCenter) {
+            $fname = $exp_fNamelname[0];
+            $lname = $exp_fNamelname[1];
+            $SeatAssign = SeatAssign::select('id', 'first_name_th', 'last_name_th', 'school', 'program_name', 'test_center', 'classLevel', 'room', 'seat_no')->where(function ($q) use ($fname, $lname, $testCenter) {
                 $q->where('first_name_th', '=', $fname)
                     ->Where('last_name_th', '=', $lname);
             })
