@@ -103,7 +103,6 @@
             {{ csrf_field() }}
         </form> --}}
     </div>
-    </script>
     <script src="{{ asset('js/create-file-list.min.js') }}"></script>
     <script src="{{ asset('dist/js/jquery.min.js') }}"></script>
     <script src="{{ asset('dist/js/bootstrap.min.js') }}"></script>
