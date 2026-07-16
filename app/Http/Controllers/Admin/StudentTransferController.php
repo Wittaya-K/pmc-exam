@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SeatAssign;
 use App\Models\ParticipantImport;
+use App\Models\TestCenter;
 use App\Exports\StudentRecheckExportFile;
 use App\Exports\StudentUpdateExportFile;
+use App\Models\StudentTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
@@ -13,42 +15,68 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class StudentUpdateController extends Controller
+class StudentTransferController extends Controller
 {
     public function index(Request $request)
     {
-        abort_unless(Gate::allows('student_update_access'), 403);
+        abort_unless(Gate::allows('student_transfer_access'), 403);
 
         $testCenter = ParticipantImport::select('test_center')->orderBy('test_center')->groupBy('test_center')->get();
         $fNamelname = ParticipantImport::select('first_name_th', 'last_name_th')->orderBy('id', 'asc')->get();
         $classLevel = ParticipantImport::select('classLevel')->orderBy('classLevel')->groupBy('classLevel')->get();
+        $building = TestCenter::select('test_center', 'building')->orderBy('test_center')->groupBy('test_center', 'building')->get();
+        $floor = TestCenter::select('test_center', 'floor')->orderBy('test_center')->groupBy('test_center', 'floor')->get();
+        $room = TestCenter::select('test_center', 'room')->orderBy('test_center')->groupBy('test_center', 'room')->get();
+        $programName = ParticipantImport::select('program_name')->orderBy('program_name')->groupBy('program_name')->get();
 
-        return view('admin.student_update.index', compact('testCenter', 'fNamelname', 'classLevel'));
+        return view('admin.student_transfer.index', compact('testCenter', 'fNamelname', 'classLevel', 'building', 'floor', 'room', 'programName'));
     }
 
     public function create()
     {
-        abort_unless(Gate::allows('student_update_create'), 403);
-        return view('admin.student_update.create');
+        abort_unless(Gate::allows('student_transfer_create'), 403);
+        return view('admin.student_transfer.create');
     }
 
     public function store(Request $request)
     {
-        abort_unless(Gate::allows('student_update_create'), 403);
+        abort_unless(Gate::allows('student_transfer_create'), 403);
 
-        ParticipantImport::updateOrCreate(
-            ['id' => $request->id],
+        $studentId = $request->input('id');
+        $first_name_th = $request->input('first_name_th');
+        $last_name_th = $request->input('last_name_th');
+        $first_name_en = $request->input('first_name_en');
+        $last_name_en = $request->input('last_name_en');
+        $school = $request->input('school');
+        $program_name = $request->input('program_name');
+        $classLevel = $request->input('classLevel');
+        $level = $request->input('level');
+        $email = $request->input('email');
+        $phone = $request->input('phone');
+        $test_center_input = $request->input('test_center_input');
+        $building = $request->input('building');
+        $floor = $request->input('floor');
+        $room = $request->input('room');
+        $build_floor_room = "อาคาร {$building} ชั้น {$floor} ห้อง {$room}";
+
+        StudentTransfer::updateOrCreate(
+            ['id' => $studentId],
             [
-                'first_name_th' => $request->first_name_th,
-                'last_name_th' => $request->last_name_th,
-                'school' => $request->school,
-                'program_name' => $request->program_name,
-                'test_center' => $request->test_center,
-                'classLevel' => $request->classLevel,
-                // 'room' => $request->room,
-                // 'seat_no' => $request->seat_no,
-                // 'attendance_status' => $request->attendance_status ?? 'pending',
-                // 'absence_reason' => $request->absence_reason,
+                'first_name_th' => $first_name_th,
+                'last_name_th' => $last_name_th,
+                'first_name_en' => $first_name_en,
+                'last_name_en' => $last_name_en,
+                'school' => $school,
+                'program_name' => $program_name,
+                'test_center' => $test_center_input,
+                'classLevel' => $classLevel,
+                'level' => $level,
+                'email' => $email,
+                'phone' => $phone,
+                'building' => $building,
+                'floor' => $floor,
+                'room' => $room,
+                'build_floor_room' => $build_floor_room
             ]
         );
 
@@ -57,21 +85,32 @@ class StudentUpdateController extends Controller
 
     public function edit($id)
     {
-        abort_unless(Gate::allows('student_update_edit'), 403);
-        $student = ParticipantImport::find($id);
-        return response()->json($student);
+        abort_unless(Gate::allows('student_transfer_edit'), 403);
+        $student = ParticipantImport::join('seat_assign', 'participant_import.id', '=', 'seat_assign.id')->find($id);
+        $studentTransfer = StudentTransfer::where('id', $id) // แก้ชื่อ column ให้ตรงกับ schema จริง
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($transfer) {
+                $transfer->created_at_formatted = $transfer->created_at->addYears(543)->format('d/m/Y'); // แปลงวันที่เป็นรูปแบบไทย
+                return $transfer;
+            });
+
+        return response()->json([
+            'student' => $student,
+            'studentTransfer' => $studentTransfer
+        ]);
     }
 
     public function destroy($id)
     {
-        abort_unless(Gate::allows('student_update_delete'), 403);
+        abort_unless(Gate::allows('student_transfer_delete'), 403);
         ParticipantImport::find($id)->delete();
         return response()->json(['success' => 'ลบข้อมูลสำเร็จ']);
     }
 
     public function updateAttendance(Request $request)
     {
-        abort_unless(Gate::allows('student_update_edit'), 403);
+        abort_unless(Gate::allows('student_transfer_edit'), 403);
 
         $validator = Validator::make($request->all(), [
             'id' => 'required|exists:seat_assign,id',
@@ -104,7 +143,7 @@ class StudentUpdateController extends Controller
 
     public function bulkUpdateAttendance(Request $request)
     {
-        abort_unless(Gate::allows('student_update_edit'), 403);
+        abort_unless(Gate::allows('student_transfer_edit'), 403);
 
         $updates = $request->input('updates', []);
 
@@ -146,14 +185,8 @@ class StudentUpdateController extends Controller
             'program_name',
             'test_center',
             'classLevel',
-            // 'room', 'seat_no', 'attendance_status', 'absence_reason'
         )
             ->where('test_center', '=', $testCenter);
-
-        // กรองตามสถานะถ้ามีการเลือก
-        // if ($attendanceStatus && $attendanceStatus !== '') {
-        //     $query->where('attendance_status', '=', $attendanceStatus);
-        // }
 
         $SeatAssign = $query->get();
 
@@ -175,7 +208,6 @@ class StudentUpdateController extends Controller
             'program_name',
             'test_center',
             'classLevel',
-            // 'room', 'seat_no', 'attendance_status', 'absence_reason'
         );
 
         // ค้นหาตามชื่อ
@@ -192,11 +224,6 @@ class StudentUpdateController extends Controller
         if ($testCenter != '') {
             $query->where('test_center', '=', $testCenter);
         }
-
-        // กรองตามสถานะ
-        // if ($attendanceStatus && $attendanceStatus !== '') {
-        //     $query->where('attendance_status', '=', $attendanceStatus);
-        // }
 
         $SeatAssign = $query->get();
 
