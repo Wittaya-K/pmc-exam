@@ -239,6 +239,7 @@ class StudentRecheckController extends Controller
     }
     public function exportFile()
     {
+        ini_set('memory_limit', '512M');
         $filename = now()->format('d-m-Y_H-i-s') . '.xlsx';
         return Excel::download(new StudentRecheckExportFile, $filename);
     }
