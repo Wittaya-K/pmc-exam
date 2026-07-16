@@ -358,6 +358,122 @@
             $(document).off('focusin.bs.modal');
         });
 
+        var options = $('#room_filter option');
+
+        options.sort(function(a, b) {
+            return $(a).text().localeCompare(
+                $(b).text(),
+                undefined,
+                {
+                    numeric: true,
+                    sensitivity: 'base'
+                }
+            );
+        });
+
+        $('#room_filter').empty().append(options);
+
+        $('#room_filter').select2();
+
+        // var options = $('#fNamelname option');
+
+        // options.sort(function(a, b) {
+        //     return $(a).text().localeCompare(
+        //         $(b).text(),
+        //         undefined,
+        //         {
+        //             numeric: true,
+        //             sensitivity: 'base'
+        //         }
+        //     );
+        // });
+
+        // $('#fNamelname').empty().append(options);
+
+        // $('#fNamelname').select2();
+
+        // $('#room_filter').select2({
+        //     sorter: function(data) {
+        //         return data.sort(function(a, b) {
+        //             return a.text.localeCompare(
+        //                 b.text,
+        //                 undefined,
+        //                 {
+        //                     numeric: true,
+        //                     sensitivity: 'base'
+        //                 }
+        //             );
+        //         });
+        //     }
+        // });
+
+        // $('#fNamelname').select2({
+        //     sorter: function(data) {
+        //         return data.sort(function(a, b) {
+        //             return a.text.localeCompare(
+        //                 b.text,
+        //                 undefined,
+        //                 {
+        //                     numeric: true,
+        //                     sensitivity: 'base'
+        //                 }
+        //             );
+        //         });
+        //     }
+        // });
+
+        $('#room_filter').select2({
+            sorter: function(data) {
+
+                var firstOption = data.filter(function(item) {
+                    return item.id === '';
+                });
+
+                var sortedOptions = data.filter(function(item) {
+                    return item.id !== '';
+                });
+
+                sortedOptions.sort(function(a, b) {
+                    return a.text.localeCompare(
+                        b.text,
+                        undefined,
+                        {
+                            numeric: true,
+                            sensitivity: 'base'
+                        }
+                    );
+                });
+
+                return firstOption.concat(sortedOptions);
+            }
+        });
+
+        $('#fNamelname').select2({
+            sorter: function(data) {
+
+                var firstOption = data.filter(function(item) {
+                    return item.id === '';
+                });
+
+                var sortedOptions = data.filter(function(item) {
+                    return item.id !== '';
+                });
+
+                sortedOptions.sort(function(a, b) {
+                    return a.text.localeCompare(
+                        b.text,
+                        undefined,
+                        {
+                            numeric: true,
+                            sensitivity: 'base'
+                        }
+                    );
+                });
+
+                return firstOption.concat(sortedOptions);
+            }
+        });
+
         var tbl_student;
 
         function show_student(data) {
