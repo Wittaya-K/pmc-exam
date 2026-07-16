@@ -5,31 +5,31 @@
         .table-test-center {
             width: 100% !important;
         }
-        
+
         .table-test-center th,
         .table-test-center td {
             white-space: nowrap;
             padding: 8px;
             vertical-align: middle;
         }
-        
+
         /* ปรับความกว้างคอลัมน์ */
         .table-test-center th:first-child,
         .table-test-center td:first-child {
             width: 50px;
         }
-        
+
         .table-test-center th:last-child,
         .table-test-center td:last-child {
             width: 100px;
             text-align: center;
         }
-        
+
         /* แก้ไข scrollbar */
         .dataTables_wrapper .dataTables_scroll {
             overflow-x: auto;
         }
-        
+
         .dataTables_wrapper .dataTables_scrollBody {
             overflow-x: auto !important;
         }
@@ -139,7 +139,7 @@
                 <div class="modal-body">
                     <form id="student_form" name="student_form" class="form-horizontal">
                         <input type="hidden" name="id" id="student_id">
-                        
+
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="form-group">
@@ -331,16 +331,13 @@
                             }
                         }
                     ],
-                    language: {
-                        url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/th.json'
-                    }
                 });
             }
 
             // เมื่อเลือกศูนย์สอบ
             $('#test_center').change(function() {
                 var test_center = $(this).val();
-                
+
                 if (!test_center) return;
 
                 loadStudentData();
@@ -383,7 +380,7 @@
                     dataType: 'json',
                     success: function(data) {
                         show_student(data);
-                        
+
                         // อัพเดทรายชื่อถ้าไม่ได้เลือกชื่อไว้
                         if (!fNamelname) {
                             $('#fNamelname').empty().append('<option value="">เลือก</option>');
@@ -418,7 +415,7 @@
             // แก้ไขผู้เข้าสอบ
             $('body').on('click', '.editStudent', function() {
                 var id = $(this).data('id');
-                
+
                 $.get("{{ route('admin.student_update.index') }}" + '/' + id + '/edit', function(data) {
                     $('#modelHeading').html("แก้ไขข้อมูลผู้เข้าสอบ");
                     $('#studentModal').modal('show');
@@ -452,13 +449,13 @@
                     success: function(data) {
                         $('#student_form')[0].reset();
                         $('#studentModal').modal('hide');
-                        
+
                         Swal.fire({
                             icon: 'success',
                             title: 'สำเร็จ',
                             text: 'บันทึกข้อมูลเรียบร้อยแล้ว'
                         });
-                        
+
                         loadStudentData();
                     }
                 });

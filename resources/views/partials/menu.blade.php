@@ -75,14 +75,14 @@
                                 </p>
                             </a>
                         </li> --}}
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="{{ route('admin.student_transfer.index') }}" class="nav-link {{ request()->is('admin/student_transfer') || request()->is('admin/student_transfer/*') ? 'active' : '' }}">
                                 <i class="fad fa-chevron-circle-right"></i>
                                 <p>
                                     <span>ย้ายศูนย์สอบ</span>
                                 </p>
                             </a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </li>
                 @endcan

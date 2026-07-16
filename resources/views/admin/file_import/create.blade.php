@@ -64,7 +64,7 @@
 @endsection
 @section('scripts')
     @parent
-    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/bootstrap-waitingfor.min.js') }}"></script>
     <script type="text/javascript">
         $.ajaxSetup({
