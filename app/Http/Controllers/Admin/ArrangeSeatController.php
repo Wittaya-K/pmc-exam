@@ -186,6 +186,7 @@ class ArrangeSeatController extends Controller
             ->get()
             ->groupBy('test_center');
 
+<<<<<<< Updated upstream
         // foreach ($studentsGeneral as $center => $studentList) {
 
         //     if (!isset($examRoomsGeneral[$center])) {
@@ -306,6 +307,8 @@ class ArrangeSeatController extends Controller
         //     }
         // }
 
+=======
+>>>>>>> Stashed changes
         // การตรวจสอบอัตโนมัติในส่วนที่ 1
         foreach ($studentsGeneral as $center => $studentList) {
 
