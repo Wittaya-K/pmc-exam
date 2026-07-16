@@ -351,15 +351,7 @@
 
         $('#test_center_input').select2({
             width: '100%',
-            dropdownParent: $('#studentModal'),
-        });
-
-        $('#room_filter').select2({
-            sortResults: data => data.sort((a, b) => a.text.localeCompare(b.text)),
-        });
-
-        $('#fNamelname').select2({
-            sortResults: data => data.sort((a, b) => a.text.localeCompare(b.text)),
+            dropdownParent: $('#studentModal')
         });
 
         $('#studentModal').on('shown.bs.modal', function () {
