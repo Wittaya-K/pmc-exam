@@ -5,45 +5,45 @@
     .table-test-center {
         width: 100% !important;
     }
-    
+
     .table-test-center th,
     .table-test-center td {
         white-space: nowrap;
         padding: 8px;
         vertical-align: middle;
     }
-    
+
     /* ปรับความกว้างคอลัมน์ */
     .table-test-center th:first-child,
     .table-test-center td:first-child {
         width: 50px;
     }
-    
+
     .table-test-center th:last-child,
     .table-test-center td:last-child {
         width: 100px;
         text-align: center;
     }
-    
+
     /* แก้ไข scrollbar */
     .dataTables_wrapper .dataTables_scroll {
         overflow-x: auto;
     }
-    
+
     .dataTables_wrapper .dataTables_scrollBody {
         overflow-x: auto !important;
     }
 
     .badge-present {
-        background-color: #28a745;
+        background-color: #31C950;
     }
 
     .badge-absent {
-        background-color: #dc3545;
+        background-color: #FF6467;
     }
 
     .badge-pending {
-        background-color: #6c757d;
+        background-color: #FFDF20;
     }
 
 </style>
@@ -57,7 +57,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="">แดชบอร์ด</a></li>
-                    <li class="breadcrumb-item active">ผู้เข้าสอบ</li>
+                    <li class="breadcrumb-item active">เช็คชื่อผู้เข้าสอบ</li>
                 </ol>
             </div>
         </div>
@@ -208,12 +208,11 @@
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label>ระดับการสอบ</label>
-                                {{-- <input type="text" class="form-control" id="program_name" name="program_name" required> --}}
                                 <select name="program_name" id="program_name" class="form-control">
                                     <option value="">เลือก</option>
-                                    <option value="ประถมปลาย (ป.4 - ป.6)">ประถมปลาย (ป.4 - ป.6)</option>
-                                    <option value="มัธยมต้น (ม.1 - ม.3)">มัธยมต้น (ม.1 - ม.3)</option>
-                                    <option value="มัธยมปลาย (ม.4 - ม.6)">มัธยมปลาย (ม.4 - ม.6)</option>
+                                    @foreach ($programName as $item)
+                                        <option value="{{ $item->program_name }}">{{ $item->program_name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -223,8 +222,7 @@
                         <div class="col-lg-4">
                             <div class="form-group">
                                 <label>ศูนย์สอบ</label>
-                                {{-- <input type="text" class="form-control" id="test_center_input" name="test_center" required> --}}
-                                <select id="test_center_input" name="test_center" required class="form-control">
+                                <select id="test_center_input" name="test_center_input" required class="form-control">
                                     <option value="">เลือก</option>
                                     @foreach ($testCenter as $item)
                                         <option value="{{ $item->test_center }}">{{ $item->test_center }}</option>
@@ -235,7 +233,6 @@
                         <div class="col-lg-4">
                             <div class="form-group">
                                 <label>ชั้นการศึกษา</label>
-                                {{-- <input type="text" class="form-control" id="classLevel" name="classLevel" required> --}}
                                 <select id="classLevel" name="classLevel" required class="form-control">
                                     <option value="">เลือก</option>
                                     @foreach ($classLevel as $item)
@@ -277,7 +274,7 @@
                         </div>
                     </div>
 
-                    <div class="text-right">
+                    <div class="text-right mt-3">
                         <button type="submit" class="btn btn-success" id="saveBtn">
                             <i class="fas fa-save"></i> บันทึก
                         </button>
@@ -322,7 +319,7 @@
                                 <th>ห้องสอบ</th>
                                 <th>เลขที่นั่ง</th>
                                 <th>สถานะ</th>
-                                <th>เหตุผล</th>
+                                {{-- <th>เหตุผล</th> --}}
                             </tr>
                         </thead>
                         <tbody id="bulkAttendanceBody"></tbody>
@@ -352,6 +349,15 @@
             }
         });
 
+        $('#test_center_input').select2({
+            width: '100%',
+            dropdownParent: $('#studentModal')
+        });
+
+        $('#studentModal').on('shown.bs.modal', function () {
+            $(document).off('focusin.bs.modal');
+        });
+
         var tbl_student;
 
         function show_student(data) {
@@ -365,13 +371,13 @@
                 scrollX: true,
                 autoWidth: false,
                 responsive: false,
-                data: data.data, 
+                data: data.data,
                 order: [[7, 'asc'], [8, 'asc']
                 ]
                 , columns: [{
                         data: 'id'
-                        , title: '#'
-                        , orderable: false
+                        , title: 'รหัสประจำตัวสอบ'
+                        , class: 'text-center'
                     , }
                     , {
                         data: 'first_name_th'
@@ -381,34 +387,30 @@
                         data: 'last_name_th'
                         , title: 'สกุลไทย'
                     , },
-                    // {
-                    //     data: 'school',
-                    //     title: 'โรงเรียน',
-                    // },
                     {
                         data: 'program_name'
                         , title: 'ระดับการสอบ'
+                        , class: 'text-center'
                     , }
                     , {
                         data: 'test_center'
                         , title: 'ศูนย์สอบ'
                     , },
-                    // {
-                    //     data: 'classLevel',
-                    //     title: 'ชั้น',
-                    // },
                     {
                         data: 'room'
                         , title: 'ห้องสอบ'
+                        , class: 'text-center'
                     , }
                     , {
                         data: 'seat_no'
                         , title: 'เลขที่นั่ง'
                         , type: 'num'
+                        , class: 'text-center'
                     }
                     , {
                         data: 'attendance_status'
                         , title: 'สถานะ'
+                        , class: 'text-center'
                         , render: function(data, type, row) {
                             var badge = 'badge-pending';
                             var text = 'รอตรวจสอบ';
@@ -425,13 +427,13 @@
                             return `<span class="badge ${badge}" data-status="${data}">${text}</span>`;
                         }
                     }
-                    , {
-                        data: 'absence_reason'
-                        , title: 'เหตุผล'
-                        , render: function(data) {
-                            return data ? data : '-';
-                        }
-                    }
+                    // , {
+                    //     data: 'absence_reason'
+                    //     , title: 'เหตุผล'
+                    //     , render: function(data) {
+                    //         return data ? data : '-';
+                    //     }
+                    // }
                     , {
                         data: null,
                         title: 'จัดการ',
@@ -441,27 +443,32 @@
                             return `
                                     <div class="btn-group">
                                         <button class="btn btn-sm btn-info editStudent mr-2" data-id="${row.id}">
-                                            <i class="fas fa-edit"></i>
+                                            <i class="fad fa-edit"></i>
                                         </button>
                                         <button class="btn btn-sm btn-success markPresent mr-2" data-id="${row.id}">
-                                            <i class="fas fa-check"></i>
+                                            <i class="fad fa-check-circle"></i>
                                         </button>
                                         <button class="btn btn-sm btn-warning markAbsent mr-2" data-id="${row.id}">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-danger deleteStudent mr-2" data-id="${row.id}">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="fad fa-money-check-edit"></i>
                                         </button>
                                     </div>
                                 `;
+                                // <button class="btn btn-sm btn-danger deleteStudent mr-2" data-id="${row.id}">
+                                //     <i class="fas fa-trash"></i>
+                                // </button>
                         }
                     }
                 ]
+                , "ordering": false
             });
         }
 
         // เมื่อเลือกศูนย์สอบ
         $('#test_center').change(function() {
+
+            $('#room_filter').val(null).trigger('change.select2');
+            $('#fNamelname').val(null).trigger('change.select2');
+
             var test_center = $(this).val();
 
             if (!test_center) return;
@@ -485,6 +492,9 @@
 
         // เมื่อเลือกห้องสอบ (เพิ่มหลัง $('#test_center').change)
         $('#room_filter').change(function() {
+
+            $('#fNamelname').val(null).trigger('change.select2');
+
             loadStudentData();
         });
 
@@ -579,7 +589,7 @@
                 $('#last_name_th').val(data.last_name_th);
                 $('#school').val(data.school);
                 $('#program_name').val(data.program_name);
-                $('#test_center_input').val(data.test_center);
+                $('#test_center_input').val(data.test_center).trigger('change');
                 $('#classLevel').val(data.classLevel);
                 $('#room').val(data.room);
                 $('#seat_no').val(data.seat_no);
@@ -740,7 +750,7 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="text" class="form-control form-control-sm reason-input" 
+                                <input type="text" class="form-control form-control-sm reason-input"
                                        value="${row.absence_reason || ''}" placeholder="เหตุผล">
                             </td>
                         </tr>

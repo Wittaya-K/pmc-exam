@@ -50,7 +50,7 @@
                 </li>
                 @endcan
                 @can('file_import_access')
-                <li class="nav-item has-treeview {{ request()->is('admin/file_import*') ? 'menu-open' : '' }} {{ request()->is('admin/student_update*') ? 'menu-open' : '' }}">
+                <li class="nav-item has-treeview {{ request()->is('admin/file_import*') ? 'menu-open' : '' }} {{ request()->is('admin/student_update*') ? 'menu-open' : '' }} {{ request()->is('admin/student_transfer*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
                         <i class="fad fa-folder"></i>
                         <p>
@@ -75,6 +75,14 @@
                                 </p>
                             </a>
                         </li> --}}
+                        <li class="nav-item">
+                            <a href="{{ route('admin.student_transfer.index') }}" class="nav-link {{ request()->is('admin/student_transfer') || request()->is('admin/student_transfer/*') ? 'active' : '' }}">
+                                <i class="fad fa-chevron-circle-right"></i>
+                                <p>
+                                    <span>ย้ายศูนย์สอบ</span>
+                                </p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 @endcan
@@ -100,7 +108,7 @@
                 </li>
                 @endcan
                 @can('student_recheck_access')
-                {{-- <li class="nav-item has-treeview {{ request()->is('admin/student_recheck*') ? 'menu-open' : '' }}">
+                <li class="nav-item has-treeview {{ request()->is('admin/student_recheck*') ? 'menu-open' : '' }}">
                     <a class="nav-link nav-dropdown-toggle">
                         <i class="fad fa-folder"></i>
                         <p>
@@ -113,12 +121,12 @@
                             <a href="{{ route('admin.student_recheck.index') }}" class="nav-link {{ request()->is('admin/student_recheck') || request()->is('admin/student_recheck/*') ? 'active' : '' }}">
                                 <i class="fad fa-chevron-circle-right"></i>
                                 <p>
-                                    <span>ผู้เข้าสอบ</span>
+                                    <span>เช็คชื่อผู้เข้าสอบ</span>
                                 </p>
                             </a>
                         </li>
                     </ul>
-                </li> --}}
+                </li>
                 @endcan
                 @can('report_access')
                 <li class="nav-item has-treeview {{ request()->is('admin/reports*') ? 'menu-open' : '' }}">

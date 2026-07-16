@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SeatAssign;
 use App\Exports\StudentRecheckExportFile;
 use App\Models\TestCenter;
+use App\Models\ParticipantImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
@@ -23,8 +24,9 @@ class StudentRecheckController extends Controller
         $fNamelname = SeatAssign::select('first_name_th', 'last_name_th')->orderBy('id', 'asc')->get();
         $room = TestCenter::select('room')->groupBy('room')->get();
         $classLevel = SeatAssign::select('classLevel')->orderBy('classLevel')->groupBy('classLevel')->get();
+        $programName = ParticipantImport::select('program_name')->orderBy('program_name')->groupBy('program_name')->get();
 
-        return view('admin.student_recheck.index', compact('testCenter', 'fNamelname', 'room','classLevel'));
+        return view('admin.student_recheck.index', compact('testCenter', 'fNamelname', 'room', 'classLevel', 'programName'));
     }
 
     public function create()
@@ -37,19 +39,31 @@ class StudentRecheckController extends Controller
     {
         abort_unless(Gate::allows('student_recheck_create'), 403);
 
+        $studentId = $request->input('id');
+        $first_name_th = $request->input('first_name_th');
+        $last_name_th = $request->input('last_name_th');
+        $school = $request->input('school');
+        $program_name = $request->input('program_name');
+        $classLevel = $request->input('classLevel');
+        $test_center_input = $request->input('test_center_input');
+        $seat_no = $request->input('seat_no');
+        $attendance_status = $request->input('attendance_status');
+        $absence_reason = $request->input('absence_reason');
+        $room = $request->input('room');
+
         SeatAssign::updateOrCreate(
-            ['id' => $request->id],
+            ['id' => $studentId],
             [
-                'first_name_th' => $request->first_name_th,
-                'last_name_th' => $request->last_name_th,
-                'school' => $request->school,
-                'program_name' => $request->program_name,
-                'test_center' => $request->test_center,
-                'classLevel' => $request->classLevel,
-                'room' => $request->room,
-                'seat_no' => $request->seat_no,
-                'attendance_status' => $request->attendance_status ?? 'pending',
-                'absence_reason' => $request->absence_reason,
+                'first_name_th' => $first_name_th,
+                'last_name_th' => $last_name_th,
+                'school' => $school,
+                'program_name' => $program_name,
+                'test_center' => $test_center_input,
+                'classLevel' => $classLevel,
+                'room' => $room,
+                'seat_no' => $seat_no,
+                'attendance_status' => $attendance_status ?? 'pending',
+                'absence_reason' => $absence_reason,
             ]
         );
 
