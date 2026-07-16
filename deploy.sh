@@ -4,7 +4,7 @@ set -e
 cd /var/www/pmc-exam
 
 git fetch origin
-git reset --hard origin/dev-pmc-15-07-2569
+git reset --hard origin/dev-pmc-16-07-2569
 git clean -fd
 
 docker compose up -d --build
