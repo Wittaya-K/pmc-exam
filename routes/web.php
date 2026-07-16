@@ -8,8 +8,10 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\StudentRecheckController;
 use App\Http\Controllers\Admin\StudentUpdateController;
 use App\Http\Controllers\Admin\ReportHeaderController;
+use App\Http\Controllers\Admin\StudentTransferController;
 use App\User;
 use Laravel\Socialite\Facades\Socialite;
+
 
 Route::redirect('/', '/login');
 
@@ -30,9 +32,9 @@ Route::get('/auth/callback', function () {
     // azure sociallite driver
     // $azureUser = Socialite::driver('azure')->user();
     $azureUser = Socialite::driver('azure')
-    ->stateless()
-    ->setHttpClient(new \GuzzleHttp\Client(['verify' => false]))
-    ->user();
+        ->stateless()
+        ->setHttpClient(new \GuzzleHttp\Client(['verify' => false]))
+        ->user();
 
     // dd($azureUser);
     // $businessPhones = $azureUser->user['businessPhones'];
@@ -89,16 +91,16 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('test_center', TestCenterController::class);
     Route::post('save/', 'TestCenterController@save')->name('save');
 
-    Route::group(['prefix' => 'test_center', 'as' => 'test_center.'], function(){
+    Route::group(['prefix' => 'test_center', 'as' => 'test_center.'], function () {
         Route::controller(TestCenterController::class)->group(function () {
             Route::post('save/', 'save')->name('save');
             Route::post('resetTestCenter', 'resetTestCenter')->name('resetTestCenter');
-            Route::post('bulk-delete','bulkDelete')->name('bulkDelete');
+            Route::post('bulk-delete', 'bulkDelete')->name('bulkDelete');
             Route::post('exportFile', action: 'exportFile')->name('exportFile');
         });
     });
 
-    Route::group(['prefix' => 'report_header', 'as' => 'report_header.'], function(){
+    Route::group(['prefix' => 'report_header', 'as' => 'report_header.'], function () {
         Route::controller(ReportHeaderController::class)->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/create', 'create')->name('create');
@@ -112,6 +114,28 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Student Recheck Routes
     Route::group(['prefix' => 'student_update', 'as' => 'student_update.'], function () {
         Route::controller(StudentUpdateController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/store', 'store')->name('store');
+            Route::get('/{id}/edit', 'edit')->name('edit');
+            Route::delete('/{id}', 'destroy')->name('destroy');
+
+            // Routes สำหรับการค้นหา
+            Route::post('/search-student', 'searchStudent')->name('searchStudent');
+            Route::post('/get-student', 'getStudent')->name('getStudent');
+
+            // Routes สำหรับการเช็คชื่อ
+            Route::post('/update-attendance', 'updateAttendance')->name('updateAttendance');
+            Route::post('/bulk-update-attendance', 'bulkUpdateAttendance')->name('bulkUpdateAttendance');
+
+            // Routes สำหรับการดาวน์โหลด
+            Route::post('exportFile', action: 'exportFile')->name('exportFile');
+        });
+    });
+
+    // Student Tranfer Routes
+    Route::group(['prefix' => 'student_transfer', 'as' => 'student_transfer.'], function () {
+        Route::controller(StudentTransferController::class)->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/create', 'create')->name('create');
             Route::post('/store', 'store')->name('store');
@@ -153,7 +177,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
         });
     });
 
-    Route::group(['prefix' => 'file_import', 'as' => 'file_import.'], function(){
+    Route::group(['prefix' => 'file_import', 'as' => 'file_import.'], function () {
         Route::controller(FileImportController::class)->group(function () {
             Route::get('', 'index')->name('index');
             Route::get('list', 'list')->name('list');
@@ -166,7 +190,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
         });
     });
 
-    Route::group(['prefix' => 'arrange_seat', 'as' => 'arrange_seat.'], function(){
+    Route::group(['prefix' => 'arrange_seat', 'as' => 'arrange_seat.'], function () {
         Route::controller(ArrangeSeatController::class)->group(function () {
             Route::get('', 'index')->name('index');
             Route::post('save/{id?}', 'save')->name('save');
@@ -183,7 +207,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
         });
     });
 
-    Route::group(['prefix' => 'reports', 'as' => 'reports.'], function(){
+    Route::group(['prefix' => 'reports', 'as' => 'reports.'], function () {
         Route::controller(ReportController::class)->group(function () {
             Route::get('', 'index')->name('index');
             Route::get('view', 'view')->name('view');
