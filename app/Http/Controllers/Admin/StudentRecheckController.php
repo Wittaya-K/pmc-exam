@@ -22,7 +22,7 @@ class StudentRecheckController extends Controller
 
         $testCenter = TestCenter::select('test_center')->orderBy('test_center')->groupBy('test_center')->get();
         $fNamelname = SeatAssign::select('first_name_th', 'last_name_th')->orderBy('id', 'asc')->get();
-        $room = TestCenter::select('room')->groupBy('room')->get();
+        $room = TestCenter::select('room')->orderBy('room')->groupBy('room')->get();
         $classLevel = SeatAssign::select('classLevel')->orderBy('classLevel')->groupBy('classLevel')->get();
         $programName = ParticipantImport::select('program_name')->orderBy('program_name')->groupBy('program_name')->get();
 
