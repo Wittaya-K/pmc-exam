@@ -372,8 +372,7 @@
                 autoWidth: false,
                 responsive: false,
                 data: data.data,
-                order: [[0, 'asc'], [5, 'asc'], [6, 'asc']
-                ]
+                order: [[0, 'asc'],[5, 'asc'],[6, 'asc']]
                 , columns: [{
                         data: 'id'
                         , title: 'รหัสประจำตัวสอบ'
@@ -459,7 +458,7 @@
                         }
                     }
                 ]
-                , "ordering": false
+                // , "ordering": false
             });
         }
 
